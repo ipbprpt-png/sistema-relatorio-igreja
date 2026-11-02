@@ -64,13 +64,17 @@
                         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                         <span class="hidden md:inline">Limpar</span>
                     </button>
-                    <button type="button" onclick="saveDraft()" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-slate-200 hover:text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-church-700">
-                        <i data-lucide="save" class="w-4 h-4"></i>
-                        <span class="hidden md:inline">Salvar Rascunho</span>
+                    <button type="button" onclick="salvarRelatorioNoBanco()" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-slate-200 hover:text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-church-700">
+                        <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                        <span class="hidden md:inline">Salvar no Banco</span>
                     </button>
                     <button type="button" onclick="window.print()" class="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-semibold rounded-md text-sm transition flex items-center space-x-1.5 shadow-sm">
                         <i data-lucide="printer" class="w-4 h-4"></i>
                         <span>Imprimir / PDF</span>
+                    </button>
+                    <button type="button" onclick="fazerLogout()" class="px-3 py-1.5 bg-rose-800 hover:bg-rose-700 text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-rose-700">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span class="hidden md:inline">Sair</span>
                     </button>
                 </div>
             </div>
@@ -249,85 +253,85 @@
                                 <tr class="bg-slate-50/50"><td colspan="4" class="py-2 px-4 font-bold text-slate-700 text-xs uppercase tracking-wider">Admissões</td></tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Profissão de Fé</td>
-                                    <td><input type="number" min="0" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_adm_pf_m" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_adm_pf_f" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_adm_pf_t" class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Profissão de Fé e Batismo</td>
-                                    <td><input type="number" min="0" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_adm_pfb_m" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_adm_pfb_f" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_adm_pfb_t" class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Transferência</td>
-                                    <td><input type="number" min="0" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_adm_transf_m" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_adm_transf_f" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_adm_transf_t" class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Jurisdição</td>
-                                    <td><input type="number" min="0" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_adm_juris_m" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_adm_juris_f" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_adm_juris_t" class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Restauração</td>
-                                    <td><input type="number" min="0" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_adm_rest_m" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_adm_rest_f" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_adm_rest_t" class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Designação do Presbitério</td>
-                                    <td><input type="number" min="0" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_adm_desig_m" class="c-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_adm_desig_f" class="c-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_adm_desig_t" class="c-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
 
                                 <tr class="bg-slate-50/50"><td colspan="4" class="py-2 px-4 font-bold text-slate-700 text-xs uppercase tracking-wider">Demissões</td></tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Transferência</td>
-                                    <td><input type="number" min="0" class="c-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_dem_transf_m" class="c-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_dem_transf_f" class="c-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_dem_transf_t" class="c-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Falecimento</td>
-                                    <td><input type="number" min="0" class="c-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_dem_falec_m" class="c-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_dem_falec_f" class="c-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_dem_falec_t" class="c-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Exclusão</td>
-                                    <td><input type="number" min="0" class="c-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_dem_excl_m" class="c-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_dem_excl_f" class="c-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_dem_excl_t" class="c-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Ordenação</td>
-                                    <td><input type="number" min="0" class="c-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="c-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="c-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="c_dem_ord_m" class="c-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="c_dem_ord_f" class="c-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="c_dem_ord_t" class="c-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
 
                                 <!-- Totais Comungantes -->
                                 <tr class="bg-emerald-50/60 font-bold border-t-2 border-emerald-200">
                                     <td class="py-2.5 px-4 text-emerald-900">Total Admissão</td>
-                                    <td><input type="number" readonly id="tot_c_adm_m" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
-                                    <td><input type="number" readonly id="tot_c_adm_f" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
-                                    <td><input type="number" readonly id="tot_c_adm_t" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
+                                    <td><input type="number" readonly id="tot_c_adm_m" name="tot_c_adm_m" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
+                                    <td><input type="number" readonly id="tot_c_adm_f" name="tot_c_adm_f" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
+                                    <td><input type="number" readonly id="tot_c_adm_t" name="tot_c_adm_t" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
                                 </tr>
                                 <tr class="bg-emerald-50/60 font-bold">
                                     <td class="py-2.5 px-4 text-emerald-900">Total Demissão</td>
-                                    <td><input type="number" readonly id="tot_c_dem_m" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
-                                    <td><input type="number" readonly id="tot_c_dem_f" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
-                                    <td><input type="number" readonly id="tot_c_dem_t" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
+                                    <td><input type="number" readonly id="tot_c_dem_m" name="tot_c_dem_m" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
+                                    <td><input type="number" readonly id="tot_c_dem_f" name="tot_c_dem_f" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
+                                    <td><input type="number" readonly id="tot_c_dem_t" name="tot_c_dem_t" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
                                 </tr>
                                 <tr class="bg-slate-100 font-bold">
                                     <td class="py-2.5 px-4 text-slate-800">Rol Separado</td>
-                                    <td><input type="number" min="0" id="rol_sep_c_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" id="rol_sep_c_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
-                                    <td><input type="number" readonly id="rol_sep_c_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                    <td><input type="number" min="0" id="rol_sep_c_m" name="rol_sep_c_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" id="rol_sep_c_f" name="rol_sep_c_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" readonly id="rol_sep_c_t" name="rol_sep_c_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -353,73 +357,73 @@
                                 <tr class="bg-slate-50/50"><td colspan="4" class="py-2 px-4 font-bold text-slate-700 text-xs uppercase tracking-wider">Admissões</td></tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Batismo</td>
-                                    <td><input type="number" min="0" class="nc-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="nc-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="nc-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="nc_adm_bat_m" class="nc-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="nc_adm_bat_f" class="nc-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="nc_adm_bat_t" class="nc-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Transferência</td>
-                                    <td><input type="number" min="0" class="nc-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="nc-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="nc-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="nc_adm_transf_m" class="nc-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="nc_adm_transf_f" class="nc-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="nc_adm_transf_t" class="nc-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Jurisdição Ex-Offício</td>
-                                    <td><input type="number" min="0" class="nc-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="nc-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="nc-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="nc_adm_juris_m" class="nc-adm-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="nc_adm_juris_f" class="nc-adm-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="nc_adm_juris_t" class="nc-adm-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
 
                                 <tr class="bg-slate-50/50"><td colspan="4" class="py-2 px-4 font-bold text-slate-700 text-xs uppercase tracking-wider">Demissões</td></tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Profissão de Fé</td>
-                                    <td><input type="number" min="0" class="nc-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="nc-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="nc-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="nc_dem_pf_m" class="nc-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="nc_dem_pf_f" class="nc-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="nc_dem_pf_t" class="nc-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Transferência</td>
-                                    <td><input type="number" min="0" class="nc-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="nc-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="nc-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="nc_dem_transf_m" class="nc-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="nc_dem_transf_f" class="nc-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="nc_dem_transf_t" class="nc-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Falecimento</td>
-                                    <td><input type="number" min="0" class="nc-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="nc-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="nc-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="nc_dem_falec_m" class="nc-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="nc_dem_falec_f" class="nc-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="nc_dem_falec_t" class="nc-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 px-4 pl-6">Exclusão</td>
-                                    <td><input type="number" min="0" class="nc-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" class="nc-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
-                                    <td class="bg-slate-50"><input type="number" readonly class="nc-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
+                                    <td><input type="number" min="0" name="nc_dem_excl_m" class="nc-dem-m w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" name="nc_dem_excl_f" class="nc-dem-f w-full text-center py-1 px-2 border rounded border-slate-300" oninput="calcMembros()"></td>
+                                    <td class="bg-slate-50"><input type="number" readonly name="nc_dem_excl_t" class="nc-dem-t w-full text-center py-1 px-2 font-bold bg-slate-100 border-0" value="0"></td>
                                 </tr>
 
                                 <!-- Totais Não Comungantes -->
                                 <tr class="bg-slate-100 font-bold border-t-2 border-slate-300">
                                     <td class="py-2.5 px-4 text-slate-800">Total Admissão</td>
-                                    <td><input type="number" readonly id="tot_nc_adm_m" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
-                                    <td><input type="number" readonly id="tot_nc_adm_f" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
-                                    <td><input type="number" readonly id="tot_nc_adm_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                    <td><input type="number" readonly id="tot_nc_adm_m" name="tot_nc_adm_m" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                    <td><input type="number" readonly id="tot_nc_adm_f" name="tot_nc_adm_f" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                    <td><input type="number" readonly id="tot_nc_adm_t" name="tot_nc_adm_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
                                 </tr>
                                 <tr class="bg-slate-100 font-bold">
                                     <td class="py-2.5 px-4 text-slate-800">Total Demissão</td>
-                                    <td><input type="number" readonly id="tot_nc_dem_m" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
-                                    <td><input type="number" readonly id="tot_nc_dem_f" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
-                                    <td><input type="number" readonly id="tot_nc_dem_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                    <td><input type="number" readonly id="tot_nc_dem_m" name="tot_nc_dem_m" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                    <td><input type="number" readonly id="tot_nc_dem_f" name="tot_nc_dem_f" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                    <td><input type="number" readonly id="tot_nc_dem_t" name="tot_nc_dem_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
                                 </tr>
                                 <tr class="bg-slate-50 font-medium">
                                     <td class="py-2 px-4 text-slate-700">Rol Separado</td>
-                                    <td><input type="number" min="0" id="rol_sep_nc_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" id="rol_sep_nc_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
-                                    <td><input type="number" readonly id="rol_sep_nc_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                    <td><input type="number" min="0" id="rol_sep_nc_m" name="rol_sep_nc_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" id="rol_sep_nc_f" name="rol_sep_nc_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" readonly id="rol_sep_nc_t" name="rol_sep_nc_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
                                 </tr>
                                 <tr class="bg-slate-50 font-medium">
                                     <td class="py-2 px-4 text-slate-700">Não Comungantes Ano Anterior</td>
-                                    <td><input type="number" min="0" id="nc_ant_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" id="nc_ant_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
-                                    <td><input type="number" readonly id="nc_ant_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                    <td><input type="number" min="0" id="nc_ant_m" name="nc_ant_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" id="nc_ant_f" name="nc_ant_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" readonly id="nc_ant_t" name="nc_ant_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -488,11 +492,11 @@
 
                             <div class="flex items-center justify-between gap-4 font-bold text-slate-800 pt-1">
                                 <span>Total Receita</span>
-                                <input type="text" id="b4_tot_rec" readonly class="text-right w-44 px-2.5 py-1.5 bg-emerald-100/60 text-emerald-900 border-0 rounded font-bold" value="R$ 0,00">
+                                <input type="text" id="b4_tot_rec" name="b4_tot_rec" readonly class="text-right w-44 px-2.5 py-1.5 bg-emerald-100/60 text-emerald-900 border-0 rounded font-bold" value="R$ 0,00">
                             </div>
                             <div class="flex items-center justify-between gap-4 font-bold text-slate-900 pt-1">
                                 <span>Total Receita + Saldo Anterior</span>
-                                <input type="text" id="b4_tot_rec_saldo" readonly class="text-right w-44 px-2.5 py-1.5 bg-emerald-200/80 text-emerald-950 border-0 rounded font-bold" value="R$ 0,00">
+                                <input type="text" id="b4_tot_rec_saldo" name="b4_tot_rec_saldo" readonly class="text-right w-44 px-2.5 py-1.5 bg-emerald-200/80 text-emerald-950 border-0 rounded font-bold" value="R$ 0,00">
                             </div>
                         </div>
                     </div>
@@ -548,7 +552,7 @@
 
                             <div class="flex items-center justify-between gap-4 font-bold text-slate-900 pt-1">
                                 <span>Total da Despesa Anual</span>
-                                <input type="text" id="b4_tot_desp" readonly class="text-right w-44 px-2.5 py-1.5 bg-rose-100/80 text-rose-950 border-0 rounded font-bold" value="R$ 0,00">
+                                <input type="text" id="b4_tot_desp" name="b4_tot_desp" readonly class="text-right w-44 px-2.5 py-1.5 bg-rose-100/80 text-rose-950 border-0 rounded font-bold" value="R$ 0,00">
                             </div>
                         </div>
                     </div>
@@ -616,11 +620,11 @@
 
                             <div class="flex items-center justify-between gap-4 font-bold text-slate-800 pt-1">
                                 <span>Total Receita Prevista</span>
-                                <input type="text" id="b5_tot_rec" readonly class="text-right w-44 px-2.5 py-1.5 bg-emerald-100/60 text-emerald-900 border-0 rounded font-bold" value="R$ 0,00">
+                                <input type="text" id="b5_tot_rec" name="b5_tot_rec" readonly class="text-right w-44 px-2.5 py-1.5 bg-emerald-100/60 text-emerald-900 border-0 rounded font-bold" value="R$ 0,00">
                             </div>
                             <div class="flex items-center justify-between gap-4 font-bold text-slate-900 pt-1">
                                 <span>Total Receita + Saldo</span>
-                                <input type="text" id="b5_tot_rec_saldo" readonly class="text-right w-44 px-2.5 py-1.5 bg-emerald-200/80 text-emerald-950 border-0 rounded font-bold" value="R$ 0,00">
+                                <input type="text" id="b5_tot_rec_saldo" name="b5_tot_rec_saldo" readonly class="text-right w-44 px-2.5 py-1.5 bg-emerald-200/80 text-emerald-950 border-0 rounded font-bold" value="R$ 0,00">
                             </div>
                         </div>
                     </div>
@@ -676,7 +680,7 @@
 
                             <div class="flex items-center justify-between gap-4 font-bold text-slate-900 pt-1">
                                 <span>Total Despesa Prevista</span>
-                                <input type="text" id="b5_tot_desp" readonly class="text-right w-44 px-2.5 py-1.5 bg-rose-100/80 text-rose-950 border-0 rounded font-bold" value="R$ 0,00">
+                                <input type="text" id="b5_tot_desp" name="b5_tot_desp" readonly class="text-right w-44 px-2.5 py-1.5 bg-rose-100/80 text-rose-950 border-0 rounded font-bold" value="R$ 0,00">
                             </div>
                         </div>
                     </div>
@@ -766,7 +770,7 @@
                     </button>
                     <button type="submit" id="submitBtn" class="hidden px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md flex items-center space-x-2">
                         <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                        <span>Finalizar & Concluir</span>
+                        <span>Finalizar & Salvar</span>
                     </button>
                 </div>
             </div>
@@ -793,13 +797,29 @@
     <script>
         let currentTab = 1;
         const totalTabs = 6;
+        const API_URL = 'http://localhost:3000/api'; // Altere para a URL do Render em produção
+        const token = localStorage.getItem('token_igreja');
+
+        // Função segura para redirecionamento
+        function redirecionarParaLogin() {
+            try {
+                window.location.href = './login.html';
+            } catch (e) {
+                console.error('Erro ao redirecionar para login:', e);
+            }
+        }
+
+        // 1. Proteção de Acesso
+        if (!token) {
+            redirecionarParaLogin();
+        }
 
         // Initialize Icons & Event Listeners
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
             initMoneyMasks();
             updateNavigation();
-            loadDraft();
+            await carregarDadosDoBanco();
         });
 
         // Tab Switching Engine
@@ -865,7 +885,6 @@
         function initMoneyMasks() {
             document.querySelectorAll('.money-input').forEach(input => {
                 input.addEventListener('input', (e) => {
-                    const cursorPosition = e.target.selectionStart;
                     e.target.value = formatBRL(e.target.value);
                 });
 
@@ -891,7 +910,7 @@
                 totalRec += parseBRL(input.value);
             });
 
-            const saldoVal = parseBRL(document.querySelector(`input[name="b${blockNum}_rec_saldo"]`).value);
+            const saldoVal = parseBRL(document.querySelector(`input[name="b${blockNum}_rec_saldo"]`)?.value || '0');
 
             document.getElementById(`b${blockNum}_tot_rec`).value = totalRec.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             document.getElementById(`b${blockNum}_tot_rec_saldo`).value = (totalRec + saldoVal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -916,10 +935,10 @@
 
             cAdmMInputs.forEach((inp, idx) => {
                 const mVal = parseInt(inp.value) || 0;
-                const fVal = parseInt(cAdmFInputs[idx].value) || 0;
+                const fVal = parseInt(cAdmFInputs[idx]?.value) || 0;
                 cAdmM += mVal;
                 cAdmF += fVal;
-                cAdmTInputs[idx].value = mVal + fVal;
+                if (cAdmTInputs[idx]) cAdmTInputs[idx].value = mVal + fVal;
             });
 
             document.getElementById('tot_c_adm_m').value = cAdmM;
@@ -934,10 +953,10 @@
 
             cDemMInputs.forEach((inp, idx) => {
                 const mVal = parseInt(inp.value) || 0;
-                const fVal = parseInt(cDemFInputs[idx].value) || 0;
+                const fVal = parseInt(cDemFInputs[idx]?.value) || 0;
                 cDemM += mVal;
                 cDemF += fVal;
-                cDemTInputs[idx].value = mVal + fVal;
+                if (cDemTInputs[idx]) cDemTInputs[idx].value = mVal + fVal;
             });
 
             document.getElementById('tot_c_dem_m').value = cDemM;
@@ -957,10 +976,10 @@
 
             ncAdmMInputs.forEach((inp, idx) => {
                 const mVal = parseInt(inp.value) || 0;
-                const fVal = parseInt(ncAdmFInputs[idx].value) || 0;
+                const fVal = parseInt(ncAdmFInputs[idx]?.value) || 0;
                 ncAdmM += mVal;
                 ncAdmF += fVal;
-                ncAdmTInputs[idx].value = mVal + fVal;
+                if (ncAdmTInputs[idx]) ncAdmTInputs[idx].value = mVal + fVal;
             });
 
             document.getElementById('tot_nc_adm_m').value = ncAdmM;
@@ -975,10 +994,10 @@
 
             ncDemMInputs.forEach((inp, idx) => {
                 const mVal = parseInt(inp.value) || 0;
-                const fVal = parseInt(ncDemFInputs[idx].value) || 0;
+                const fVal = parseInt(ncDemFInputs[idx]?.value) || 0;
                 ncDemM += mVal;
                 ncDemF += fVal;
-                ncDemTInputs[idx].value = mVal + fVal;
+                if (ncDemTInputs[idx]) ncDemTInputs[idx].value = mVal + fVal;
             });
 
             document.getElementById('tot_nc_dem_m').value = ncDemM;
@@ -996,34 +1015,97 @@
             document.getElementById('nc_ant_t').value = ncAntM + ncAntF;
         }
 
-        // ================= UTILITIES & DRAFT STORAGE =================
-        function saveDraft() {
-            const formData = new FormData(document.getElementById('churchReportForm'));
-            const dataObj = {};
-            formData.forEach((value, key) => { dataObj[key] = value; });
-            localStorage.setItem('church_report_draft', JSON.stringify(dataObj));
-            showModal('Rascunho Salvo', 'Seus dados foram armazenados no navegador com sucesso!');
+        // ================= API INTEGRATION & DATA STORAGE =================
+        async function carregarDadosDoBanco() {
+            const ano = 2026;
+            try {
+                const res = await fetch(`${API_URL}/relatorio/${ano}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.status === 401 || res.status === 403) {
+                    fazerLogout();
+                    return;
+                }
+
+                if (res.ok) {
+                    const relatorio = await res.json();
+                    preencherFormularioComDadosDoBanco(relatorio);
+                }
+            } catch (err) {
+                console.error('Erro ao buscar dados do banco:', err);
+            }
         }
 
-        function loadDraft() {
-            const saved = localStorage.getItem('church_report_draft');
-            if (!saved) return;
+        async function salvarRelatorioNoBanco() {
+            const dadosFormulario = {
+                anoReferencia: 2026,
+                estruturaDados: coletarCamposDoBloco('block-1'),
+                departamentos: coletarCamposDoBloco('block-2'),
+                rolMembros: coletarCamposDoBloco('block-3'),
+                financeiroPassado: coletarCamposDoBloco('block-4'),
+                financeiroFuturo: coletarCamposDoBloco('block-5'),
+                informacoesFinais: coletarCamposDoBloco('block-6')
+            };
+
             try {
-                const dataObj = JSON.parse(saved);
-                for (let key in dataObj) {
-                    const el = document.querySelector(`[name="${key}"]`);
-                    if (el) el.value = dataObj[key];
+                const resposta = await fetch(`${API_URL}/relatorio/salvar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(dadosFormulario)
+                });
+
+                const resultado = await resposta.json();
+
+                if (resposta.ok) {
+                    showModal('Sucesso!', 'Relatório salvo com sucesso no banco de dados!');
+                } else {
+                    showModal('Erro ao Salvar', resultado.erro || 'Ocorreu um erro no servidor.');
                 }
-                calcMembros();
-                calcFinanceiro(4);
-                calcFinanceiro(5);
-            } catch(e) { console.error("Erro ao carregar rascunho", e); }
+            } catch (err) {
+                showModal('Erro de Conexão', 'Não foi possível conectar ao servidor.');
+            }
+        }
+
+        function coletarCamposDoBloco(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return {};
+            
+            const inputs = container.querySelectorAll('input, select, textarea');
+            const dados = {};
+            inputs.forEach((input, index) => {
+                const chave = input.name || input.id || `campo_${containerId}_${index}`;
+                dados[chave] = input.value;
+            });
+            return dados;
+        }
+
+        function preencherFormularioComDadosDoBanco(relatorio) {
+            const blocos = ['estruturaDados', 'departamentos', 'rolMembros', 'financeiroPassado', 'financeiroFuturo', 'informacoesFinais'];
+            
+            blocos.forEach(blocoKey => {
+                const bloco = relatorio[blocoKey];
+                if (bloco) {
+                    Object.keys(bloco).forEach(campoChave => {
+                        const campo = document.getElementById(campoChave) || document.querySelector(`[name="${campoChave}"]`);
+                        if (campo) {
+                            campo.value = bloco[campoChave];
+                        }
+                    });
+                }
+            });
+
+            calcMembros();
+            calcFinanceiro(4);
+            calcFinanceiro(5);
         }
 
         function resetForm() {
             if (confirm("Tem certeza que deseja limpar todo o formulário? Os dados não salvos serão perdidos.")) {
                 document.getElementById('churchReportForm').reset();
-                localStorage.removeItem('church_report_draft');
                 calcMembros();
                 calcFinanceiro(4);
                 calcFinanceiro(5);
@@ -1034,7 +1116,13 @@
 
         function handleFormSubmit(e) {
             e.preventDefault();
-            showModal('Formulário Concluído!', 'O relatório foi validado e está pronto. Use o botão "Imprimir / PDF" na barra superior para exportar a versão final.');
+            salvarRelatorioNoBanco();
+        }
+
+        function fazerLogout() {
+            localStorage.removeItem('token_igreja');
+            localStorage.removeItem('nome_igreja');
+            redirecionarParaLogin();
         }
 
         function showModal(title, msg) {
