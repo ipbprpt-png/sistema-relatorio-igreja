@@ -58,7 +58,7 @@
 
 <script>
   // Substitua pela URL gerada pelo Render:
-  const API_URL = 'https://sistema-relatorio-igreja.onrender.com/api'; 
+  const API_URL = 'https://sistema-relatorio-igreja.onrender.com'; 
   let modoCadastro = false;
 
   // Se já estiver logado, redireciona diretamente para o formulário
