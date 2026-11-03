@@ -1,1 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso ao Sistema - Relatório Anual</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+    .card { background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; max-width: 400px; }
+    h2 { text-align: center; margin: 0 0 20px 0; color: #1e293b; font-size: 22px; font-weight: 700; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; margin-bottom: 6px; color: #475569; font-size: 14px; font-weight: 500; }
+    input { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; outline: none; transition: border-color 0.2s; }
+    input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15); }
+    button { width: 100%; padding: 12px; background: #15803d; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; margin-top: 10px; transition: background 0.2s; }
+    button:hover { background: #166534; }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    .toggle { text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; }
+    .toggle a { color: #15803d; text-decoration: none; font-weight: 600; cursor: pointer; }
+    .toggle a:hover { text-decoration: underline; }
+    .erro { color: #dc2626; font-size: 14px; text-align: center; margin-bottom: 12px; font-weight: 500; background: #fef2f2; padding: 8px; border-radius: 6px; border: 1px solid #fecaca; display: none; }
+    .sucesso { color: #166534; font-size: 14px; text-align: center; margin-bottom: 12px; font-weight: 500; background: #f0fdf4; padding: 8px; border-radius: 6px; border: 1px solid #bbf7d0; display: none; }
+  </style>
+</head>
+<body>
 
+<div class="card">
+  <h2 id="titulo-form">Login da Igreja</h2>
+  
+  <div id="mensagem-erro" class="erro"></div>
+  <div id="mensagem-sucesso" class="sucesso"></div>
+
+  <form id="auth-form">
+    <div class="form-group" id="grupo-nome" style="display: none;">
+      <label for="nomeIgreja">Nome da Igreja / Congregação *</label>
+      <input type="text" id="nomeIgreja" placeholder="Ex: Igreja Presbiteriana Central">
+    </div>
+
+    <div class="form-group">
+      <label for="email">E-mail de Acesso *</label>
+      <input type="email" id="email" required placeholder="seuemail@igreja.org">
+    </div>
+
+    <div class="form-group">
+      <label for="senha">Senha *</label>
+      <input type="password" id="senha" required placeholder="••••••••">
+    </div>
+
+    <button type="submit" id="btn-submit">Entrar</button>
+  </form>
+
+  <div class="toggle">
+    <span id="texto-toggle">Não tem conta?</span> 
+    <a id="link-toggle" onclick="alternarModo()">Cadastre-se</a>
+  </div>
+</div>
+
+<script>
+  // Substitua pela URL gerada pelo Render:
+  const API_URL = 'https://api-igreja-xxxx.onrender.com/api'; 
+  let modoCadastro = false;
+
+  // Se já estiver logado, redireciona diretamente para o formulário
+  if (localStorage.getItem('token_igreja')) {
+    redirecionarParaIndex();
+  }
+
+  function redirecionarParaIndex() {
+    try {
+      window.location.href = './index.html';
+    } catch (e) {
+      console.error('Erro no redirecionamento:', e);
+    }
+  }
+
+  function alternarModo() {
+    modoCadastro = !modoCadastro;
+    
+    // Atualiza interface
+    document.getElementById('titulo-form').innerText = modoCadastro ? 'Cadastrar Igreja' : 'Login da Igreja';
+    document.getElementById('grupo-nome').style.display = modoCadastro ? 'block' : 'none';
+    document.getElementById('btn-submit').innerText = modoCadastro ? 'Cadastrar' : 'Entrar';
+    document.getElementById('texto-toggle').innerText = modoCadastro ? 'Já possui conta?' : 'Não tem conta?';
+    document.getElementById('link-toggle').innerText = modoCadastro ? 'Faça Login' : 'Cadastre-se';
+    
+    // Validação dinâmica do campo de nome
+    document.getElementById('nomeIgreja').required = modoCadastro;
+
+    // Limpa mensagens
+    ocultarMensagens();
+  }
+
+  function mostrarErro(msg) {
+    const erroDiv = document.getElementById('mensagem-erro');
+    erroDiv.innerText = msg;
+    erroDiv.style.display = 'block';
+    document.getElementById('mensagem-sucesso').style.display = 'none';
+  }
+
+  function mostrarSucesso(msg) {
+    const sucessoDiv = document.getElementById('mensagem-sucesso');
+    sucessoDiv.innerText = msg;
+    sucessoDiv.style.display = 'block';
+    document.getElementById('mensagem-erro').style.display = 'none';
+  }
+
+  function ocultarMensagens() {
+    document.getElementById('mensagem-erro').style.display = 'none';
+    document.getElementById('mensagem-sucesso').style.display = 'none';
+  }
+
+  document.getElementById('auth-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    ocultarMensagens();
+
+    const btnSubmit = document.getElementById('btn-submit');
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+    const nomeIgreja = document.getElementById('nomeIgreja').value.trim();
+
+    if (modoCadastro && !nomeIgreja) {
+      mostrarErro('Por favor, informe o nome da Igreja.');
+      return;
+    }
+
+    const rota = modoCadastro ? '/auth/registrar' : '/auth/login';
+    const payload = modoCadastro ? { email, senha, nomeIgreja } : { email, senha };
+
+    // Bloqueia o botão para evitar múltiplos envios
+    btnSubmit.disabled = true;
+    btnSubmit.innerText = modoCadastro ? 'Cadastrando...' : 'Entrando...';
+
+    try {
+      const resposta = await fetch(`${API_URL}${rota}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(dados.erro || 'Erro ao processar requisição');
+      }
+
+      if (modoCadastro) {
+        mostrarSucesso('Cadastro realizado com sucesso! Faça login para continuar.');
+        alternarModo();
+      } else {
+        // Armazena o Token JWT e o nome da igreja no navegador
+        localStorage.setItem('token_igreja', dados.token);
+        if (dados.nomeIgreja) {
+          localStorage.setItem('nome_igreja', dados.nomeIgreja);
+        }
+        redirecionarParaIndex();
+      }
+    } catch (err) {
+      mostrarErro(err.message || 'Falha de conexão com o servidor.');
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerText = modoCadastro ? 'Cadastrar' : 'Entrar';
+    }
+  });
+</script>
+
+</body>
+</html>
