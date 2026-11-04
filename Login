@@ -60,7 +60,6 @@
   // Substitua pela URL gerada pelo Render:
   const API_URL = 'https://sistema-relatorio-igreja.onrender.com/api'; 
   let modoCadastro = false;
-
   // Se já estiver logado, redireciona diretamente para o formulário
   if (localStorage.getItem('token_igreja')) {
     redirecionarParaIndex();
