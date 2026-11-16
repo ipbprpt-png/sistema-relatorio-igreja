@@ -9,12 +9,13 @@ datasource db {
 }
 
 model Usuario {
-  id          String      @id @default(uuid())
-  email       String      @unique
-  senha       String
-  nomeIgreja  String
-  criadoEm    DateTime    @default(now())
-  relatorios  Relatorio[]
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  senha              String
+  nomeIgreja         String
+  criadoEm           DateTime            @default(now())
+  relatorios         Relatorio[]
+  relatoriosConselho RelatorioConselho[]
 }
 
 model Relatorio {
@@ -31,4 +32,22 @@ model Relatorio {
 
   usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId String
+}
+
+model RelatorioConselho {
+  id                     String   @id @default(uuid())
+  anoReferencia          Int      @default(2026)
+  identificacao          Json?    // Seção I: Nome, Endereço, CNPJ, Data organização, Sínodo, Presbitério
+  organizacao            Json?    // Seção II - Item 1 (1.1 a 1.6: imóveis, inventário, rol, IR/RAIS/DIRF, congregações)
+  supervisaoEspiritual   Json?    // Seção II - Item 2 (2.1 Ceia, 2.2 Evangelismo/Missões, 2.3 Educação, 2.4 Ação Social)
+  supervisaoAdmin        Json?    // Seção II - Item 3 (3.1 Dízimos, 3.2-3.6 Reuniões, 3.7-3.14 Tesouraria, Mandatos, Previdência)
+  planejamentoPatrimonio Json?    // Seção II - Itens 4 e 5 (Planejamento Estratégico, Seguro, Alvará, Bombeiros, Cert. Digital)
+  informacoesFinais      Json?    // Local, Data e Secretário do Conselho
+  atualizadoEm           DateTime @updatedAt
+  criadoEm               DateTime @default(now())
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId String
+
+  @@unique([usuarioId, anoReferencia])
 }
