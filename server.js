@@ -159,7 +159,83 @@ app.get('/api/relatorio/:ano', autenticarToken, async (req, res) => {
     res.status(500).json({ erro: 'Erro ao buscar o relatório.' });
   }
 });
+// 5. Rota para Salvar / Atualizar Relatório do Conselho (Relatório 2)
+app.post('/api/relatorio-conselho/salvar', autenticarToken, async (req, res) => {
+  const {
+    anoReferencia,
+    identificacao,
+    organizacao,
+    supervisaoEspiritual,
+    supervisaoAdmin,
+    planejamentoPatrimonio,
+    informacoesFinais
+  } = req.body;
+  const usuarioId = req.usuario.id;
+  const ano = anoReferencia || 2026;
 
+  try {
+    const relatorioExistente = await prisma.relatorioConselho.findUnique({
+      where: {
+        usuarioId_anoReferencia: { usuarioId, anoReferencia: ano }
+      }
+    });
+
+    if (relatorioExistente) {
+      await prisma.relatorioConselho.update({
+        where: { id: relatorioExistente.id },
+        data: {
+          identificacao,
+          organizacao,
+          supervisaoEspiritual,
+          supervisaoAdmin,
+          planejamentoPatrimonio,
+          informacoesFinais
+        }
+      });
+      return res.json({ mensagem: 'Relatório do Conselho atualizado com sucesso!' });
+    } else {
+      await prisma.relatorioConselho.create({
+        data: {
+          usuarioId,
+          anoReferencia: ano,
+          identificacao,
+          organizacao,
+          supervisaoEspiritual,
+          supervisaoAdmin,
+          planejamentoPatrimonio,
+          informacoesFinais
+        }
+      });
+      return res.status(201).json({ mensagem: 'Relatório do Conselho salvo com sucesso!' });
+    }
+  } catch (err) {
+    console.error('Erro ao salvar relatório do conselho:', err);
+    res.status(500).json({ erro: 'Erro ao salvar o Relatório do Conselho no banco de dados.' });
+  }
+});
+
+// 6. Rota para Buscar o Relatório do Conselho do Ano
+app.get('/api/relatorio-conselho/:ano', autenticarToken, async (req, res) => {
+  const ano = parseInt(req.params.ano) || 2026;
+  const usuarioId = req.usuario.id;
+
+  try {
+    const relatorio = await prisma.relatorioConselho.findUnique({
+      where: {
+        usuarioId_anoReferencia: { usuarioId, anoReferencia: ano }
+      }
+    });
+
+    if (!relatorio) {
+      return res.status(404).json({ mensagem: 'Nenhum Relatório do Conselho encontrado para este ano.' });
+    }
+
+    res.json(relatorio);
+  } catch (err) {
+    console.error('Erro ao buscar relatório do conselho:', err);
+    res.status(500).json({ erro: 'Erro ao buscar o Relatório do Conselho.' });
+  }
+});
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
