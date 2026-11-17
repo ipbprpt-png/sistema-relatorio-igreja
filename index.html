@@ -341,9 +341,22 @@
                                     <td><input type="number" min="0" id="rol_sep_c_f" name="rol_sep_c_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
                                     <td><input type="number" readonly id="rol_sep_c_t" name="rol_sep_c_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
                                 </tr>
+
                             </tbody>
                         </table>
-                    </div>
+                    </div><tr class="bg-slate-100 font-bold">
+                                    <td class="py-2.5 px-4 text-slate-800">Rol Separado</td>
+                                    <td><input type="number" min="0" id="rol_sep_c_m" name="rol_sep_c_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" id="rol_sep_c_f" name="rol_sep_c_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" readonly id="rol_sep_c_t" name="rol_sep_c_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                </tr>
+                                <!-- ADICIONE ESTA NOVA LINHA ABAIXO -->
+                                <tr class="bg-slate-50 font-medium">
+                                    <td class="py-2.5 px-4 text-slate-700">Comungantes Ano Anterior</td>
+                                    <td><input type="number" min="0" id="c_ant_m" name="c_ant_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" min="0" id="c_ant_f" name="c_ant_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
+                                    <td><input type="number" readonly id="c_ant_t" name="c_ant_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
+                                </tr>
                 </div>
 
                 <!-- 2. NÃO COMUNGANTES -->
