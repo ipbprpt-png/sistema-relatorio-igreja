@@ -335,17 +335,7 @@
                                     <td><input type="number" readonly id="tot_c_dem_f" name="tot_c_dem_f" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
                                     <td><input type="number" readonly id="tot_c_dem_t" name="tot_c_dem_t" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
                                 </tr>
-                                <tr class="bg-slate-100 font-bold">
-                                    <td class="py-2.5 px-4 text-slate-800">Rol Separado</td>
-                                    <td><input type="number" min="0" id="rol_sep_c_m" name="rol_sep_c_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
-                                    <td><input type="number" min="0" id="rol_sep_c_f" name="rol_sep_c_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
-                                    <td><input type="number" readonly id="rol_sep_c_t" name="rol_sep_c_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-                    </div>
-                                <tr class="bg-slate-100 font-bold">
+                               <tr class="bg-slate-100 font-bold">
                                     <td class="py-2.5 px-4 text-slate-800">Rol Separado</td>
                                     <td><input type="number" min="0" id="rol_sep_c_m" name="rol_sep_c_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
                                     <td><input type="number" min="0" id="rol_sep_c_f" name="rol_sep_c_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
@@ -359,7 +349,6 @@
                                     <td><input type="number" readonly id="c_ant_t" name="c_ant_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
                                 </tr>
                      </div>
-
                 <!-- 2. NÃO COMUNGANTES -->
                 <div>
                     <h3 class="text-md font-bold text-slate-800 bg-slate-100 p-2.5 rounded-lg border border-slate-200 mb-3 flex items-center gap-2">
@@ -989,6 +978,12 @@
             const rolSepCM = parseInt(document.getElementById('rol_sep_c_m').value) || 0;
             const rolSepCF = parseInt(document.getElementById('rol_sep_c_f').value) || 0;
             document.getElementById('rol_sep_c_t').value = rolSepCM + rolSepCF;
+
+            // ADICIONE ESTE BLOCO ABAIXO:
+            // Comungantes Ano Anterior
+            const cAntM = parseInt(document.getElementById('c_ant_m').value) || 0;
+            const cAntF = parseInt(document.getElementById('c_ant_f').value) || 0;
+            document.getElementById('c_ant_t').value = cAntM + cAntF;
 
             // Não Comungantes Admissão
             let ncAdmM = 0, ncAdmF = 0;
