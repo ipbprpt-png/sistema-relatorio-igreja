@@ -909,6 +909,251 @@
         function closeModal() {
             document.getElementById('customModal').classList.add('hidden');
         }
+    </sc<script>
+        let currentTab = 1;
+        const totalTabs = 6;
+        let listaRelatoriosSalvos = [];
+        const API_URL = 'https://sistema-relatorio-igreja.onrender.com/api';
+        const token = localStorage.getItem('token_igreja');
+
+        if (!token) {
+            window.location.href = './login.html';
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+            updateNavigation();
+            await carregarListaMinistros();
+        });
+
+        function switchTab(tabIndex) {
+            if (tabIndex < 1 || tabIndex > totalTabs) return;
+
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100";
+            });
+
+            const targetBlock = document.getElementById(`block-${tabIndex}`);
+            if (targetBlock) {
+                targetBlock.classList.remove('hidden');
+            }
+
+            const activeBtn = document.getElementById(`tab-btn-${tabIndex}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn active px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 bg-church-50 text-church-800 border border-church-200 font-semibold";
+            }
+
+            currentTab = tabIndex;
+            updateNavigation();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changeTab(delta) {
+            switchTab(currentTab + delta);
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (prevBtn) prevBtn.disabled = (currentTab === 1);
+            if (nextBtn && submitBtn) {
+                if (currentTab === totalTabs) {
+                    nextBtn.classList.add('hidden');
+                    submitBtn.classList.remove('hidden');
+                } else {
+                    nextBtn.classList.remove('hidden');
+                    submitBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        function calcMinistro() {
+            let totAtos = 0;
+            document.querySelectorAll('.ato-pastoral').forEach(i => totAtos += (parseInt(i.value) || 0));
+            const elAtos = document.getElementById('total_atos');
+            if (elAtos) elAtos.value = totAtos;
+
+            let totDout = 0;
+            document.querySelectorAll('.dout-item').forEach(i => totDout += (parseInt(i.value) || 0));
+            const elDout = document.getElementById('total_dout');
+            if (elDout) elDout.value = totDout;
+
+            let totVis = 0;
+            document.querySelectorAll('.vis-item').forEach(i => totVis += (parseInt(i.value) || 0));
+            const elVis = document.getElementById('total_visitas');
+            if (elVis) elVis.value = totVis;
+        }
+
+        function coletarCamposDoBloco(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return {};
+            const inputs = container.querySelectorAll('input, select, textarea');
+            const dados = {};
+            inputs.forEach((input, index) => {
+                if (input.type === 'hidden') return;
+                const chave = input.name || input.id || `campo_${containerId}_${index}`;
+                dados[chave] = input.value;
+            });
+            return dados;
+        }
+
+        async function carregarListaMinistros() {
+            const anoEl = document.getElementById('anoReferencia');
+            const ano = anoEl ? (parseInt(anoEl.value) || 2026) : 2026;
+            try {
+                const res = await fetch(`${API_URL}/relatorio-ministro/${ano}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.status === 401 || res.status === 403) {
+                    fazerLogout();
+                    return;
+                }
+
+                if (res.ok) {
+                    listaRelatoriosSalvos = await res.json();
+                    const seletor = document.getElementById('seletorMinistros');
+                    if (seletor) {
+                        seletor.innerHTML = '<option value="">-- Novo Relatório de Ministro --</option>';
+                        listaRelatoriosSalvos.forEach(rel => {
+                            const opt = document.createElement('option');
+                            opt.value = rel.id;
+                            opt.textContent = rel.nomeMinistro;
+                            seletor.appendChild(opt);
+                        });
+
+                        if (listaRelatoriosSalvos.length > 0 && !document.getElementById('relatorioId').value) {
+                            seletor.value = listaRelatoriosSalvos[0].id;
+                            preencherFormulario(listaRelatoriosSalvos[0]);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao carregar lista de ministros:', err);
+            }
+        }
+
+        function selecionarMinistroSalvo(id) {
+            if (!id) {
+                novoMinistro();
+                return;
+            }
+            const rel = listaRelatoriosSalvos.find(r => r.id === id);
+            if (rel) {
+                preencherFormulario(rel);
+            }
+        }
+
+        function preencherFormulario(rel) {
+            document.getElementById('ministroReportForm').reset();
+            document.getElementById('relatorioId').value = rel.id;
+            document.getElementById('anoReferencia').value = rel.anoReferencia || 2026;
+            document.getElementById('nomeMinistro').value = rel.nomeMinistro || '';
+
+            const blocos = [
+                'identificacaoCampo',
+                'liderancaPastoral',
+                'nutricaoEspiritual',
+                'assistenciaPastoral',
+                'protecaoPastoral',
+                'outrasInformacoes'
+            ];
+
+            blocos.forEach(blocoKey => {
+                const bloco = rel[blocoKey];
+                if (bloco) {
+                    Object.keys(bloco).forEach(campoChave => {
+                        const campo = document.getElementById(campoChave) || document.querySelector(`[name="${campoChave}"]`);
+                        if (campo) campo.value = bloco[campoChave];
+                    });
+                }
+            });
+
+            calcMinistro();
+        }
+
+        function novoMinistro() {
+            document.getElementById('ministroReportForm').reset();
+            document.getElementById('relatorioId').value = '';
+            document.getElementById('seletorMinistros').value = '';
+            calcMinistro();
+            switchTab(1);
+        }
+
+        async function salvarRelatorioNoBanco() {
+            const nomeMinistro = document.getElementById('nomeMinistro').value.trim();
+            if (!nomeMinistro) {
+                switchTab(1);
+                showModal('Campo Obrigatório', 'Por favor, preencha o Nome Completo do Ministro na aba I-II antes de salvar.');
+                return;
+            }
+
+            const dadosFormulario = {
+                id: document.getElementById('relatorioId').value || null,
+                anoReferencia: parseInt(document.getElementById('anoReferencia').value) || 2026,
+                nomeMinistro,
+                identificacaoCampo: coletarCamposDoBloco('block-1'),
+                liderancaPastoral: coletarCamposDoBloco('block-2'),
+                nutricaoEspiritual: coletarCamposDoBloco('block-3'),
+                assistenciaPastoral: coletarCamposDoBloco('block-4'),
+                protecaoPastoral: coletarCamposDoBloco('block-5'),
+                outrasInformacoes: coletarCamposDoBloco('block-6')
+            };
+
+            try {
+                const resposta = await fetch(`${API_URL}/relatorio-ministro/salvar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(dadosFormulario)
+                });
+
+                const resultado = await resposta.json();
+
+                if (resposta.ok) {
+                    if (resultado.id) {
+                        document.getElementById('relatorioId').value = resultado.id;
+                    }
+                    await carregarListaMinistros();
+                    if (resultado.id) {
+                        document.getElementById('seletorMinistros').value = resultado.id;
+                    }
+                    showModal('Sucesso!', resultado.mensagem || 'Relatório do Ministro salvo com sucesso!');
+                } else {
+                    showModal('Erro ao Salvar', resultado.erro || 'Ocorreu um erro no servidor.');
+                }
+            } catch (err) {
+                showModal('Erro de Conexão', 'Não foi possível conectar ao servidor.');
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            salvarRelatorioNoBanco();
+        }
+
+        function fazerLogout() {
+            localStorage.removeItem('token_igreja');
+            localStorage.removeItem('nome_igreja');
+            window.location.href = './login.html';
+        }
+
+        function showModal(title, msg) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = msg;
+            document.getElementById('customModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
