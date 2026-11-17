@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório do Ministro Presbiteriano</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        church: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; font-size: 10pt; }
+            .shadow-sm, .shadow-md, .shadow-lg { box-shadow: none !important; }
+            input, select, textarea { border-bottom: 1px solid #94a3b8 !important; background: transparent !important; }
+            .tab-content { display: block !important; page-break-inside: avoid; }
+            .print-title { display: block !important; }
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="bg-church-900 text-white shadow-md sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="book-open-check" class="w-8 h-8 text-emerald-400"></i>
+                    <div>
+                        <h1 class="text-lg font-bold leading-tight">Relatório do Ministro Presbiteriano</h1>
+                        <p class="text-xs text-emerald-200">Modelo CSM/IPB-2022.v2.0 — Presbitério</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <a href="./index.html" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-emerald-500">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                        <span class="hidden xl:inline">Rel. Estatístico</span>
+                    </a>
+                    <a href="./conselho.html" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-emerald-500">
+                        <i data-lucide="scroll-text" class="w-4 h-4"></i>
+                        <span class="hidden xl:inline">Rel. Conselho</span>
+                    </a>
+                    <button type="button" onclick="novoMinistro()" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-slate-200 hover:text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-church-700">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span class="hidden md:inline">Novo</span>
+                    </button>
+                    <button type="button" onclick="salvarRelatorioNoBanco()" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-slate-200 hover:text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-church-700">
+                        <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                        <span class="hidden md:inline">Salvar</span>
+                    </button>
+                    <button type="button" onclick="window.print()" class="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-semibold rounded-md text-sm transition flex items-center space-x-1.5 shadow-sm">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        <span>Imprimir / PDF</span>
+                    </button>
+                    <button type="button" onclick="fazerLogout()" class="px-3 py-1.5 bg-rose-800 hover:bg-rose-700 text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-rose-700">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Print Header -->
+    <div class="hidden print-title p-6 text-center border-b border-slate-300 mb-6">
+        <h1 class="text-2xl font-bold uppercase tracking-wide text-slate-900">Relatório do Ministro Presbiteriano</h1>
+        <p class="text-sm text-slate-600">Igreja Presbiteriana do Brasil — CSM/IPB-2022.v2.0</p>
+    </div>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Barra de Seleção de Ministros Salvos -->
+        <div class="no-print mb-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-sm text-slate-700">
+                <i data-lucide="users" class="w-5 h-5 text-church-700"></i>
+                <span class="font-semibold">Ministros registrados neste ano:</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <select id="seletorMinistros" onchange="selecionarMinistroSalvo(this.value)" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 min-w-[240px]">
+                    <option value="">-- Novo Relatório de Ministro --</option>
+                </select>
+                <button type="button" onclick="novoMinistro()" class="px-3 py-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-sm font-semibold transition">
+                    + Novo Ministro
+                </button>
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="no-print mb-6 border-b border-slate-200 bg-white rounded-t-xl shadow-sm overflow-hidden">
+            <nav class="flex overflow-x-auto py-2 px-3 space-x-2" aria-label="Blocos do Formulário">
+                <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn active px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 bg-church-50 text-church-800 border border-church-200">
+                    <span class="w-5 h-5 rounded-full bg-church-600 text-white flex items-center justify-center text-xs">I-II</span>
+                    <span>Identificação & Campo</span>
+                </button>
+                <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">A</span>
+                    <span>Liderança Pastoral</span>
+                </button>
+                <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">B</span>
+                    <span>Nutrição Espiritual</span>
+                </button>
+                <button onclick="switchTab(4)" id="tab-btn-4" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">C</span>
+                    <span>Assistência Pastoral</span>
+                </button>
+                <button onclick="switchTab(5)" id="tab-btn-5" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">D</span>
+                    <span>Proteção Pastoral</span>
+                </button>
+                <button onclick="switchTab(6)" id="tab-btn-6" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">IV-V</span>
+                    <span>Outras Ativ. & Encerramento</span>
+                </button>
+            </nav>
+        </div>
+
+        <form id="ministroReportForm" onsubmit="handleFormSubmit(event)">
+            <input type="hidden" id="relatorioId" value="">
+
+            <!-- ================= BLOCO 1: I. IDENTIFICAÇÃO E II. CAMPO ================= -->
+            <section id="block-1" class="tab-content bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="border-b border-slate-200 pb-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="user-square-2" class="w-6 h-6 text-church-700"></i>
+                            I. Identificação do Ministro & II. Campo de Trabalho
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">Dados pessoais, previdenciários, familiares e campo ministerial.</p>
+                    </div>
+                    <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-full border border-slate-200">1 de 6</span>
+                </div>
+
+                <!-- Jurisdição e Ano -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Ano</label>
+                        <input type="number" id="anoReferencia" name="anoReferencia" value="2026" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sínodo</label>
+                        <input type="text" name="sinodo" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sigla Sínodo</label>
+                        <input type="text" name="sigla_sinodo" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm uppercase">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Presbitério</label>
+                        <input type="text" name="presbiterio" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sigla Presb.</label>
+                        <input type="text" name="sigla_presbiterio" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm uppercase">
+                    </div>
+                </div>
+
+                <!-- Dados Pessoais -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">Nome Completo do Ministro *</label>
+                        <input type="text" id="nomeMinistro" name="nomeMinistro" required placeholder="Rev. ..." class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Aniversário (Dia/Mês)</label>
+                        <input type="text" name="aniversario" placeholder="DD/MM" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Estado Civil</label>
+                        <select name="estado_civil" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white">
+                            <option value="">Selecione...</option>
+                            <option value="Casado">Casado</option>
+                            <option value="Solteiro">Solteiro</option>
+                            <option value="Viúvo">Viúvo</option>
+                            <option value="Divorciado">Divorciado</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
+                        <input type="email" name="email" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Cônjuge</label>
+                        <input type="text" name="conjuge" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Nº de Dependentes</label>
+                        <input type="number" min="0" name="num_dependentes" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+
+                    <div class="md:col-span-4">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Filhos (Nomes / Idades)</label>
+                        <input type="text" name="filhos" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Endereço</label>
+                        <input type="text" name="endereco" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Bairro</label>
+                        <input type="text" name="bairro" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">CEP</label>
+                        <input type="text" name="cep" placeholder="00000-000" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Cidade</label>
+                        <input type="text" name="cidade" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">UF</label>
+                        <input type="text" maxlength="2" name="uf" placeholder="SP" class="w-full px-3 py-2 border border-slate-300 rounded-lg uppercase">
+                    </div>
+                </div>
+
+                <!-- Situação Ministerial e Previdenciária -->
+                <div class="border-t border-slate-200 pt-5 mb-6">
+                    <h3 class="font-bold text-church-800 mb-4">Situação Ministerial, Previdenciária e Côngruas</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Dedicação ao Ministério</label>
+                            <select name="dedicacao" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="">Selecione...</option>
+                                <option value="Integral">Integral</option>
+                                <option value="Parcial">Parcial</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Férias</label>
+                            <select name="ferias" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="">Selecione...</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Parcial">Parcial</option>
+                                <option value="Não teve">Não teve</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Aposentadoria Oficial</label>
+                            <select name="aposentadoria_oficial" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="">Selecione...</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Aposentadoria Privada</label>
+                            <select name="aposentadoria_privada" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="">Selecione...</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Plano de Saúde</label>
+                            <select name="plano_saude" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="">Selecione...</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Contribui INSS s/ Côngruas?</label>
+                            <select name="contribui_inss" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="">Selecione...</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Contribui Previdência Privada?</label>
+                            <select name="contribui_prev_privada" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="">Selecione...</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Côngruas &ge; Piso do Presbitério?</label>
+                            <select name="congruas_piso" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="">Selecione...</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- II. Campo de Trabalho -->
+                <div class="border-t border-slate-200 pt-5">
+                    <h3 class="font-bold text-church-800 mb-3">II. Campo de Trabalho</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Igreja(s)</label>
+                            <textarea name="campo_igrejas" rows="2" placeholder="Nome da(s) igreja(s) pastoreada(s)..." class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Congregação(ões)</label>
+                            <textarea name="campo_congregacoes" rows="2" placeholder="Nome da(s) congregação(ões)..." class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= BLOCO 2: III.A. LIDERANÇA PASTORAL ================= -->
+            <section id="block-2" class="tab-content hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="border-b border-slate-200 pb-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">III.A — Liderança Pastoral</h2>
+                        <p class="text-xs italic text-slate-500 mt-1">"Guia-me pelas veredas da justiça" — Avaliação de liderança, Atos Pastorais e Atuação Conciliar.</p>
+                    </div>
+                    <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-full border border-slate-200">2 de 6</span>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">1. Que desafios e carências da liderança da Igreja (ou sociedades/ministérios) você identificou nesse ano findo?</label>
+                        <textarea name="lid_q1" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">2. Como você procurou atuar na liderança pastoral frente a esses desafios?</label>
+                        <textarea name="lid_q2" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div class="max-w-xs">
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">3. Os resultados obtidos foram:</label>
+                        <select name="lid_q3_resultado" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50">
+                            <option value="">Selecione...</option>
+                            <option value="Aquém do esperado">Aquém do esperado</option>
+                            <option value="Razoáveis">Razoáveis</option>
+                            <option value="Muito bons">Muito bons</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">4. Que iniciativas você pode planejar para o próximo ano, visando este amadurecimento específico da Igreja?</label>
+                        <textarea name="lid_q4" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">5. Que iniciativas você pode planejar para o próximo ano, visando sua preparação pessoal para uma liderança mais efetiva?</label>
+                        <textarea name="lid_q5" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                </div>
+
+                <!-- Atos Pastorais -->
+                <div class="border border-slate-200 rounded-lg p-4 mb-6 bg-slate-50/50">
+                    <h3 class="font-bold text-church-800 mb-3">Atos Pastorais (Janeiro a Dezembro do ano findo)</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Santas Ceias</label>
+                            <input type="number" min="0" name="atos_ceias" oninput="calcMinistro()" class="ato-pastoral w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Batismos Infantis</label>
+                            <input type="number" min="0" name="atos_batismos" oninput="calcMinistro()" class="ato-pastoral w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Bênçãos Nupciais</label>
+                            <input type="number" min="0" name="atos_nupciais" oninput="calcMinistro()" class="ato-pastoral w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Funerais</label>
+                            <input type="number" min="0" name="atos_funerais" oninput="calcMinistro()" class="ato-pastoral w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Profissões de Fé</label>
+                            <input type="number" min="0" name="atos_pf" oninput="calcMinistro()" class="ato-pastoral w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Prof. Fé & Batismos</label>
+                            <input type="number" min="0" name="atos_pfb" oninput="calcMinistro()" class="ato-pastoral w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-emerald-900 mb-1">Total Atos</label>
+                            <input type="number" readonly id="total_atos" value="0" class="w-full px-2.5 py-1.5 bg-emerald-100/70 text-emerald-950 font-bold rounded border-0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Art. 37 e Atuação Conciliar -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">Ministério Designado nos Termos do Artigo 37 da CI/IPB</label>
+                        <textarea name="artigo_37" rows="3" placeholder="Descrição das atividades (se aplicável)..." class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">Atuação Conciliar</label>
+                        <textarea name="atuacao_conciliar" rows="3" placeholder="Cargos em Comissões Executivas, Secretarias de Causas, Juntas, Comissões e Autarquias..." class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= BLOCO 3: III.B. NUTRIÇÃO ESPIRITUAL ================= -->
+            <section id="block-3" class="tab-content hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="border-b border-slate-200 pb-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">III.B — Nutrição Espiritual</h2>
+                        <p class="text-xs italic text-slate-500 mt-1">"Ele me faz repousar em pastos verdejantes." — Ensino cristocêntrico e Doutrinação.</p>
+                    </div>
+                    <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-full border border-slate-200">3 de 6</span>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">1. Que desafios e carências no aprendizado bíblico-cristocêntrico da Igreja você identificou nesse ano findo?</label>
+                        <textarea name="nut_q1" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">2. Como você procurou atuar como pastor-mestre, frente a esses desafios?</label>
+                        <textarea name="nut_q2" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div class="max-w-xs">
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">3. Os resultados obtidos foram:</label>
+                        <select name="nut_q3_resultado" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50">
+                            <option value="">Selecione...</option>
+                            <option value="Aquém do esperado">Aquém do esperado</option>
+                            <option value="Razoáveis">Razoáveis</option>
+                            <option value="Muito bons">Muito bons</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">4. Que iniciativas você pode planejar para o próximo ano, visando este amadurecimento específico da Igreja?</label>
+                        <textarea name="nut_q4" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">5. Que iniciativas você pode planejar para o próximo ano, visando sua preparação pessoal para um ensino bíblico-reformado ainda mais consistente?</label>
+                        <textarea name="nut_q5" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                </div>
+
+                <!-- Doutrinação -->
+                <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
+                    <h3 class="font-bold text-church-800 mb-3">Doutrinação (Quantidade aproximada no ano findo)</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Pregações</label>
+                            <input type="number" min="0" name="dout_pregacoes" oninput="calcMinistro()" class="dout-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Evangelização</label>
+                            <input type="number" min="0" name="dout_evangelizacao" oninput="calcMinistro()" class="dout-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Discipulado</label>
+                            <input type="number" min="0" name="dout_discipulado" oninput="calcMinistro()" class="dout-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Artigos</label>
+                            <input type="number" min="0" name="dout_artigos" oninput="calcMinistro()" class="dout-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Produção Online</label>
+                            <input type="number" min="0" name="dout_online" oninput="calcMinistro()" class="dout-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Outros</label>
+                            <input type="number" min="0" name="dout_outros" oninput="calcMinistro()" class="dout-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-emerald-900 mb-1">Total</label>
+                            <input type="number" readonly id="total_dout" value="0" class="w-full px-2.5 py-1.5 bg-emerald-100/70 text-emerald-950 font-bold rounded border-0">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= BLOCO 4: III.C. ASSISTÊNCIA PASTORAL ================= -->
+            <section id="block-4" class="tab-content hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="border-b border-slate-200 pb-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">III.C — Assistência Pastoral</h2>
+                        <p class="text-xs italic text-slate-500 mt-1">"Porque tu estás comigo" — Cuidado com o rebanho, visitação e aconselhamento.</p>
+                    </div>
+                    <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-full border border-slate-200">4 de 6</span>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">1. Que desafios e carências na assistência da Igreja você identificou nesse ano findo?</label>
+                        <textarea name="ass_q1" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">2. Como você procurou atuar pessoalmente frente a esses desafios, bem como envolver todo o Conselho no cuidado pastoral?</label>
+                        <textarea name="ass_q2" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div class="max-w-xs">
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">3. Os resultados obtidos foram:</label>
+                        <select name="ass_q3_resultado" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50">
+                            <option value="">Selecione...</option>
+                            <option value="Aquém do esperado">Aquém do esperado</option>
+                            <option value="Razoáveis">Razoáveis</option>
+                            <option value="Muito bons">Muito bons</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">4. Que iniciativas você pode planejar para o próximo ano, visando intensificar o cuidado pastoral da Igreja?</label>
+                        <textarea name="ass_q4" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">5. Que iniciativas você pode planejar para o próximo ano, visando sua preparação pessoal para uma assistência pastoral mais efetiva?</label>
+                        <textarea name="ass_q5" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                </div>
+
+                <!-- Visitas -->
+                <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
+                    <h3 class="font-bold text-church-800 mb-3">Visitas (Quantidade aproximada de Janeiro a Dezembro)</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Lares</label>
+                            <input type="number" min="0" name="vis_lares" oninput="calcMinistro()" class="vis-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Reuniões de Oração</label>
+                            <input type="number" min="0" name="vis_oracao" oninput="calcMinistro()" class="vis-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Congreg. / Campos</label>
+                            <input type="number" min="0" name="vis_campos" oninput="calcMinistro()" class="vis-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Aconselhamentos</label>
+                            <input type="number" min="0" name="vis_aconselhamento" oninput="calcMinistro()" class="vis-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Capelania</label>
+                            <input type="number" min="0" name="vis_capelania" oninput="calcMinistro()" class="vis-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-700 mb-1">Departamentos</label>
+                            <input type="number" min="0" name="vis_departamentos" oninput="calcMinistro()" class="vis-item w-full px-2.5 py-1.5 border border-slate-300 rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-emerald-900 mb-1">Total Visitas</label>
+                            <input type="number" readonly id="total_visitas" value="0" class="w-full px-2.5 py-1.5 bg-emerald-100/70 text-emerald-950 font-bold rounded border-0">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= BLOCO 5: III.D. PROTEÇÃO PASTORAL ================= -->
+            <section id="block-5" class="tab-content hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="border-b border-slate-200 pb-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">III.D — Proteção Pastoral</h2>
+                        <p class="text-xs italic text-slate-500 mt-1">"Preparas-me uma mesa na presença dos meus adversários" — Vigilância, unidade e pureza doutrinária.</p>
+                    </div>
+                    <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-full border border-slate-200">5 de 6</span>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">1. Que desafios e riscos para a Igreja (ou para sociedades internas/ministérios sob sua responsabilidade) você identificou nesse ano findo?</label>
+                        <textarea name="prot_q1" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">2. Como você procurou atuar na proteção do rebanho, frente a essas ameaças?</label>
+                        <textarea name="prot_q2" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div class="max-w-xs">
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">3. Os resultados obtidos foram:</label>
+                        <select name="prot_q3_resultado" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50">
+                            <option value="">Selecione...</option>
+                            <option value="Aquém do esperado">Aquém do esperado</option>
+                            <option value="Razoáveis">Razoáveis</option>
+                            <option value="Muito bons">Muito bons</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">4. Que iniciativas você pode planejar para o próximo ano, visando este amadurecimento específico da Igreja?</label>
+                        <textarea name="prot_q4" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-800 mb-1">5. Que iniciativas você pode planejar para o próximo ano, visando sua preparação pessoal para uma vigilância mais efetiva?</label>
+                        <textarea name="prot_q5" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= BLOCO 6: IV. OUTRAS ATIVIDADES & V. ENCERRAMENTO ================= -->
+            <section id="block-6" class="tab-content hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="border-b border-slate-200 pb-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">IV. Outras Atividades & V. Outras Informações</h2>
+                        <p class="text-sm text-slate-500 mt-1">Atividades paraeclesiásticas, seculares, observações finais e assinatura.</p>
+                    </div>
+                    <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-full border border-slate-200">6 de 6</span>
+                </div>
+
+                <div class="space-y-5 mb-8">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">IV. Outras Atividades (paraeclesiásticas, cursos, congressos, leituras, atividades seculares)</label>
+                        <textarea name="outras_atividades" rows="4" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+
+                    <div class="max-w-xs">
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">Os resultados obtidos foram:</label>
+                        <select name="outras_atividades_resultado" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50">
+                            <option value="">Selecione...</option>
+                            <option value="Aquém do esperado">Aquém do esperado</option>
+                            <option value="Razoáveis">Razoáveis</option>
+                            <option value="Muito bons">Muito bons</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">V. Outras Informações Relevantes</label>
+                        <textarea name="outras_informacoes" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-200 pt-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Local (Cidade/UF) *</label>
+                        <input type="text" name="final_local" required placeholder="Ex: Altinópolis/SP" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Data *</label>
+                        <input type="date" name="final_data" required class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                </div>
+
+                <div class="hidden print:block mt-20 pt-8">
+                    <div class="max-w-md mx-auto text-center text-sm">
+                        <div class="border-b border-slate-800 mb-2"></div>
+                        <p class="font-bold">Assinatura do Ministro</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Navigation -->
+            <div class="no-print flex items-center justify-
