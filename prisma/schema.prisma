@@ -12,11 +12,12 @@ model Usuario {
   id                 String              @id @default(uuid())
   email              String              @unique
   senha              String
-  nomeIgreja         String
+  nomeIgreja         String              // Guarda o Nome da Igreja (se IGREJA/ADMIN) ou Nome do Ministro (se MINISTRO)
+  role               String              @default("IGREJA") // "IGREJA", "MINISTRO" ou "ADMIN"
   criadoEm           DateTime            @default(now())
   relatorios         Relatorio[]
   relatoriosConselho RelatorioConselho[]
-  relatoriosMinistro RelatorioMinistro[] // <-- Nova linha adicionada aqui
+  relatoriosMinistro RelatorioMinistro[]
 }
 
 model Relatorio {
@@ -53,7 +54,6 @@ model RelatorioConselho {
   @@unique([usuarioId, anoReferencia])
 }
 
-// <-- Novo bloco adicionado no final do arquivo
 model RelatorioMinistro {
   id                  String   @id @default(uuid())
   anoReferencia       Int      @default(2026)

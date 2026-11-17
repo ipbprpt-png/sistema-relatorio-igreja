@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
@@ -7,146 +8,136 @@ const { PrismaClient } = require('@prisma/client');
 const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'chave_secreta_padrao_igreja';
+const JWT_SECRET = process.env.JWT_SECRET || 'chave_secreta_prpt_2026';
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
-// Rota de Teste para checar se a API está no ar
-app.get('/', (req, res) => {
-  res.json({ mensagem: 'API do Relatório Anual da Igreja está funcionando perfeitamente!' });
-});
-
-// Middleware de Autenticação JWT
-const autenticarToken = (req, res, next) => {
+// ==================== MIDDLEWARES DE AUTENTICAÇÃO E PERFIL ====================
+function autenticarToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ erro: 'Acesso negado. Token não fornecido.' });
+    return res.status(401).json({ erro: 'Token de acesso não fornecido.' });
   }
 
   jwt.verify(token, JWT_SECRET, (err, usuario) => {
-    if (err) return res.status(403).json({ erro: 'Token inválido ou expirado.' });
+    if (err) {
+      return res.status(403).json({ erro: 'Token inválido ou expirado.' });
+    }
     req.usuario = usuario;
     next();
   });
-};
+}
 
-// 1. Rota de Cadastro de Igreja / Usuário
-app.post('/api/auth/registrar', async (req, res) => {
-  const { email, senha, nomeIgreja } = req.body;
+function exigirPerfil(...perfisPermitidos) {
+  return (req, res, next) => {
+    const roleUsuario = req.usuario.role || 'IGREJA';
+    if (!perfisPermitidos.includes(roleUsuario)) {
+      return res.status(403).json({ erro: 'Acesso negado para este tipo de perfil.' });
+    }
+    next();
+  };
+}
 
-  if (!email || !senha || !nomeIgreja) {
-    return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
-  }
+// ==================== ROTA DE SAÚDE ====================
+app.get('/', (req, res) => {
+  res.json({ status: 'API Presbitério de Ribeirão Preto (PRPT) online!' });
+});
 
+// ==================== AUTENTICAÇÃO (CADASTRO E LOGIN) ====================
+app.post('/api/auth/cadastro', async (req, res) => {
   try {
-    const usuarioExiste = await prisma.usuario.findUnique({ where: { email } });
-    if (usuarioExiste) {
-      return res.status(400).json({ erro: 'E-mail já cadastrado.' });
+    const { email, senha, nomeIgreja, role } = req.body;
+
+    if (!email || !senha || !nomeIgreja) {
+      return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+    }
+
+    // Permite apenas IGREJA ou MINISTRO no cadastro público (ADMIN é definido via banco/painel)
+    const perfilValidado = role === 'MINISTRO' ? 'MINISTRO' : 'IGREJA';
+
+    const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
+    if (usuarioExistente) {
+      return res.status(400).json({ erro: 'Este e-mail já está cadastrado.' });
     }
 
     const senhaHash = await bcrypt.hash(senha, 10);
+
     const novoUsuario = await prisma.usuario.create({
       data: {
         email,
         senha: senhaHash,
-        nomeIgreja
+        nomeIgreja,
+        role: perfilValidado
       }
     });
 
-    res.status(201).json({ mensagem: 'Igreja cadastrada com sucesso!' });
-  } catch (err) {
-    console.error('Erro no registro:', err);
-    res.status(500).json({ erro: 'Erro ao cadastrar igreja no banco de dados.' });
+    res.status(201).json({
+      mensagem: 'Conta criada com sucesso!',
+      usuario: {
+        id: novoUsuario.id,
+        email: novoUsuario.email,
+        nomeIgreja: novoUsuario.nomeIgreja,
+        role: novoUsuario.role
+      }
+    });
+  } catch (error) {
+    console.error('Erro no cadastro:', error);
+    res.status(500).json({ erro: 'Erro interno ao cadastrar conta.' });
   }
 });
 
-// 2. Rota de Login
 app.post('/api/auth/login', async (req, res) => {
-  const { email, senha } = req.body;
-
   try {
+    const { email, senha } = req.body;
+
     const usuario = await prisma.usuario.findUnique({ where: { email } });
     if (!usuario) {
-      return res.status(400).json({ erro: 'E-mail ou senha incorretos.' });
+      return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
     }
 
     const senhaValida = await bcrypt.compare(senha, usuario.senha);
     if (!senhaValida) {
-      return res.status(400).json({ erro: 'E-mail ou senha incorretos.' });
+      return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
     }
 
+    const roleAtual = usuario.role || 'IGREJA';
+
     const token = jwt.sign(
-      { id: usuario.id, email: usuario.email, nomeIgreja: usuario.nomeIgreja },
+      {
+        id: usuario.id,
+        email: usuario.email,
+        nomeIgreja: usuario.nomeIgreja,
+        role: roleAtual
+      },
       JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn: '7d' }
     );
 
     res.json({
+      mensagem: 'Login realizado com sucesso!',
       token,
       nomeIgreja: usuario.nomeIgreja,
-      mensagem: 'Login realizado com sucesso!'
+      role: roleAtual
     });
-  } catch (err) {
-    console.error('Erro no login:', err);
-    res.status(500).json({ erro: 'Erro ao realizar login.' });
+  } catch (error) {
+    console.error('Erro no login:', error);
+    res.status(500).json({ erro: 'Erro interno ao realizar login.' });
   }
 });
 
-// 3. Rota para Salvar / Atualizar Relatório
-app.post('/api/relatorio/salvar', autenticarToken, async (req, res) => {
-  const { anoReferencia, estruturaDados, departamentos, rolMembros, financeiroPassado, financeiroFuturo, informacoesFinais } = req.body;
-  const usuarioId = req.usuario.id;
-
+// ==================== RELATÓRIO 1: ESTATÍSTICO & FINANCEIRO (IGREJA / ADMIN) ====================
+app.get('/api/relatorio/:ano', autenticarToken, exigirPerfil('IGREJA', 'ADMIN'), async (req, res) => {
   try {
-    const relatorioExistente = await prisma.relatorio.findFirst({
-      where: { usuarioId, anoReferencia: anoReferencia || 2026 }
-    });
-
-    if (relatorioExistente) {
-      await prisma.relatorio.update({
-        where: { id: relatorioExistente.id },
-        data: {
-          estruturaDados,
-          departamentos,
-          rolMembros,
-          financeiroPassado,
-          financeiroFuturo,
-          informacoesFinais
-        }
-      });
-      return res.json({ mensagem: 'Relatório atualizado com sucesso!' });
-    } else {
-      await prisma.relatorio.create({
-        data: {
-          usuarioId,
-          anoReferencia: anoReferencia || 2026,
-          estruturaDados,
-          departamentos,
-          rolMembros,
-          financeiroPassado,
-          financeiroFuturo,
-          informacoesFinais
-        }
-      });
-      return res.status(201).json({ mensagem: 'Relatório salvo com sucesso!' });
-    }
-  } catch (err) {
-    console.error('Erro ao salvar relatório:', err);
-    res.status(500).json({ erro: 'Erro ao salvar o relatório no banco de dados.' });
-  }
-});
-
-// 4. Rota para Buscar o Relatório do Ano
-app.get('/api/relatorio/:ano', autenticarToken, async (req, res) => {
-  const ano = parseInt(req.params.ano) || 2026;
-  const usuarioId = req.usuario.id;
-
-  try {
+    const ano = parseInt(req.params.ano) || 2026;
     const relatorio = await prisma.relatorio.findFirst({
-      where: { usuarioId, anoReferencia: ano }
+      where: {
+        usuarioId: req.usuario.id,
+        anoReferencia: ano
+      },
+      orderBy: { atualizadoEm: 'desc' }
     });
 
     if (!relatorio) {
@@ -154,88 +145,281 @@ app.get('/api/relatorio/:ano', autenticarToken, async (req, res) => {
     }
 
     res.json(relatorio);
-  } catch (err) {
-    console.error('Erro ao buscar relatório:', err);
-    res.status(500).json({ erro: 'Erro ao buscar o relatório.' });
+  } catch (error) {
+    console.error('Erro ao buscar relatório:', error);
+    res.status(500).json({ erro: 'Erro interno ao carregar relatório.' });
   }
 });
-// 5. Rota para Salvar / Atualizar Relatório do Conselho (Relatório 2)
-app.post('/api/relatorio-conselho/salvar', autenticarToken, async (req, res) => {
-  const {
-    anoReferencia,
-    identificacao,
-    organizacao,
-    supervisaoEspiritual,
-    supervisaoAdmin,
-    planejamentoPatrimonio,
-    informacoesFinais
-  } = req.body;
-  const usuarioId = req.usuario.id;
-  const ano = anoReferencia || 2026;
 
+app.post('/api/relatorio/salvar', autenticarToken, exigirPerfil('IGREJA', 'ADMIN'), async (req, res) => {
   try {
-    const relatorioExistente = await prisma.relatorioConselho.findUnique({
-      where: {
-        usuarioId_anoReferencia: { usuarioId, anoReferencia: ano }
-      }
+    const {
+      anoReferencia,
+      estruturaDados,
+      departamentos,
+      rolMembros,
+      financeiroPassado,
+      financeiroFuturo,
+      informacoesFinais
+    } = req.body;
+
+    const ano = parseInt(anoReferencia) || 2026;
+
+    const existente = await prisma.relatorio.findFirst({
+      where: { usuarioId: req.usuario.id, anoReferencia: ano }
     });
 
-    if (relatorioExistente) {
-      await prisma.relatorioConselho.update({
-        where: { id: relatorioExistente.id },
+    let relatorioSalvo;
+    if (existente) {
+      relatorioSalvo = await prisma.relatorio.update({
+        where: { id: existente.id },
         data: {
-          identificacao,
-          organizacao,
-          supervisaoEspiritual,
-          supervisaoAdmin,
-          planejamentoPatrimonio,
+          estruturaDados,
+          departamentos,
+          rolMembros,
+          financeiroPassado,
+          financeiroFuturo,
           informacoesFinais
         }
       });
-      return res.json({ mensagem: 'Relatório do Conselho atualizado com sucesso!' });
     } else {
-      await prisma.relatorioConselho.create({
+      relatorioSalvo = await prisma.relatorio.create({
         data: {
-          usuarioId,
+          usuarioId: req.usuario.id,
           anoReferencia: ano,
-          identificacao,
-          organizacao,
-          supervisaoEspiritual,
-          supervisaoAdmin,
-          planejamentoPatrimonio,
+          estruturaDados,
+          departamentos,
+          rolMembros,
+          financeiroPassado,
+          financeiroFuturo,
           informacoesFinais
         }
       });
-      return res.status(201).json({ mensagem: 'Relatório do Conselho salvo com sucesso!' });
     }
-  } catch (err) {
-    console.error('Erro ao salvar relatório do conselho:', err);
-    res.status(500).json({ erro: 'Erro ao salvar o Relatório do Conselho no banco de dados.' });
+
+    res.json({ mensagem: 'Relatório Estatístico salvo com sucesso!', relatorio: relatorioSalvo });
+  } catch (error) {
+    console.error('Erro ao salvar relatório:', error);
+    res.status(500).json({ erro: 'Erro interno ao salvar relatório.' });
   }
 });
 
-// 6. Rota para Buscar o Relatório do Conselho do Ano
-app.get('/api/relatorio-conselho/:ano', autenticarToken, async (req, res) => {
-  const ano = parseInt(req.params.ano) || 2026;
-  const usuarioId = req.usuario.id;
-
+// ==================== RELATÓRIO 2: CONSELHO / MESA (IGREJA / ADMIN) ====================
+app.get('/api/relatorio-conselho/:ano', autenticarToken, exigirPerfil('IGREJA', 'ADMIN'), async (req, res) => {
   try {
+    const ano = parseInt(req.params.ano) || 2026;
     const relatorio = await prisma.relatorioConselho.findUnique({
       where: {
-        usuarioId_anoReferencia: { usuarioId, anoReferencia: ano }
+        usuarioId_anoReferencia: {
+          usuarioId: req.usuario.id,
+          anoReferencia: ano
+        }
       }
     });
 
     if (!relatorio) {
-      return res.status(404).json({ mensagem: 'Nenhum Relatório do Conselho encontrado para este ano.' });
+      return res.status(404).json({ mensagem: 'Nenhum relatório do Conselho encontrado para este ano.' });
     }
 
     res.json(relatorio);
-  } catch (err) {
-    console.error('Erro ao buscar relatório do conselho:', err);
-    res.status(500).json({ erro: 'Erro ao buscar o Relatório do Conselho.' });
+  } catch (error) {
+    console.error('Erro ao buscar relatório do Conselho:', error);
+    res.status(500).json({ erro: 'Erro interno ao carregar relatório do Conselho.' });
   }
 });
+
+app.post('/api/relatorio-conselho/salvar', autenticarToken, exigirPerfil('IGREJA', 'ADMIN'), async (req, res) => {
+  try {
+    const {
+      anoReferencia,
+      identificacao,
+      organizacao,
+      supervisaoEspiritual,
+      supervisaoAdmin,
+      planejamentoPatrimonio,
+      informacoesFinais
+    } = req.body;
+
+    const ano = parseInt(anoReferencia) || 2026;
+
+    const relatorioSalvo = await prisma.relatorioConselho.upsert({
+      where: {
+        usuarioId_anoReferencia: {
+          usuarioId: req.usuario.id,
+          anoReferencia: ano
+        }
+      },
+      update: {
+        identificacao,
+        organizacao,
+        supervisaoEspiritual,
+        supervisaoAdmin,
+        planejamentoPatrimonio,
+        informacoesFinais
+      },
+      create: {
+        usuarioId: req.usuario.id,
+        anoReferencia: ano,
+        identificacao,
+        organizacao,
+        supervisaoEspiritual,
+        supervisaoAdmin,
+        planejamentoPatrimonio,
+        informacoesFinais
+      }
+    });
+
+    res.json({ mensagem: 'Relatório do Conselho salvo com sucesso!', relatorio: relatorioSalvo });
+  } catch (error) {
+    console.error('Erro ao salvar relatório do Conselho:', error);
+    res.status(500).json({ erro: 'Erro interno ao salvar relatório do Conselho.' });
+  }
+});
+
+// ==================== RELATÓRIO 3: MINISTRO PRESBITERIANO (MINISTRO / ADMIN) ====================
+app.get('/api/relatorio-ministro/:ano', autenticarToken, exigirPerfil('MINISTRO', 'ADMIN'), async (req, res) => {
+  try {
+    const ano = parseInt(req.params.ano) || 2026;
+    const relatorios = await prisma.relatorioMinistro.findMany({
+      where: {
+        usuarioId: req.usuario.id,
+        anoReferencia: ano
+      },
+      orderBy: { atualizadoEm: 'desc' }
+    });
+
+    res.json(relatorios);
+  } catch (error) {
+    console.error('Erro ao listar relatórios de ministros:', error);
+    res.status(500).json({ erro: 'Erro interno ao carregar relatórios de ministros.' });
+  }
+});
+
+app.post('/api/relatorio-ministro/salvar', autenticarToken, exigirPerfil('MINISTRO', 'ADMIN'), async (req, res) => {
+  try {
+    const {
+      id,
+      anoReferencia,
+      nomeMinistro,
+      identificacaoCampo,
+      liderancaPastoral,
+      nutricaoEspiritual,
+      assistenciaPastoral,
+      protecaoPastoral,
+      outrasInformacoes
+    } = req.body;
+
+    if (!nomeMinistro || !nomeMinistro.trim()) {
+      return res.status(400).json({ erro: 'O nome do ministro é obrigatório.' });
+    }
+
+    const ano = parseInt(anoReferencia) || 2026;
+    let relatorioSalvo;
+
+    if (id) {
+      const existente = await prisma.relatorioMinistro.findFirst({
+        where: { id, usuarioId: req.usuario.id }
+      });
+
+      if (!existente) {
+        return res.status(404).json({ erro: 'Relatório do ministro não encontrado.' });
+      }
+
+      relatorioSalvo = await prisma.relatorioMinistro.update({
+        where: { id },
+        data: {
+          anoReferencia: ano,
+          nomeMinistro: nomeMinistro.trim(),
+          identificacaoCampo,
+          liderancaPastoral,
+          nutricaoEspiritual,
+          assistenciaPastoral,
+          protecaoPastoral,
+          outrasInformacoes
+        }
+      });
+    } else {
+      relatorioSalvo = await prisma.relatorioMinistro.create({
+        data: {
+          usuarioId: req.usuario.id,
+          anoReferencia: ano,
+          nomeMinistro: nomeMinistro.trim(),
+          identificacaoCampo,
+          liderancaPastoral,
+          nutricaoEspiritual,
+          assistenciaPastoral,
+          protecaoPastoral,
+          outrasInformacoes
+        }
+      });
+    }
+
+    res.json({
+      mensagem: 'Relatório do Ministro salvo com sucesso!',
+      id: relatorioSalvo.id,
+      relatorio: relatorioSalvo
+    });
+  } catch (error) {
+    console.error('Erro ao salvar relatório do ministro:', error);
+    res.status(500).json({ erro: 'Erro interno ao salvar relatório do ministro.' });
+  }
+});
+
+// ==================== ROTAS ADMINISTRATIVAS (SECRETARIA PRPT / ADMIN) ====================
+app.get('/api/admin/painel/:ano', autenticarToken, exigirPerfil('ADMIN'), async (req, res) => {
+  try {
+    const ano = parseInt(req.params.ano) || 2026;
+
+    const usuarios = await prisma.usuario.findMany({
+      orderBy: { nomeIgreja: 'asc' },
+      select: {
+        id: true,
+        email: true,
+        nomeIgreja: true,
+        role: true,
+        criadoEm: true,
+        relatorios: {
+          where: { anoReferencia: ano }
+        },
+        relatoriosConselho: {
+          where: { anoReferencia: ano }
+        },
+        relatoriosMinistro: {
+          where: { anoReferencia: ano }
+        }
+      }
+    });
+
+    res.json({ ano, usuarios });
+  } catch (error) {
+    console.error('Erro no painel admin:', error);
+    res.status(500).json({ erro: 'Erro ao carregar dados administrativos.' });
+  }
+});
+
+// Permite ao Admin alterar o perfil de um usuário ou criar novas contas
+app.patch('/api/admin/usuario/:id/role', autenticarToken, exigirPerfil('ADMIN'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    if (!['IGREJA', 'MINISTRO', 'ADMIN'].includes(role)) {
+      return res.status(400).json({ erro: 'Perfil inválido.' });
+    }
+
+    const atualizado = await prisma.usuario.update({
+      where: { id },
+      data: { role },
+      select: { id: true, email: true, nomeIgreja: true, role: true }
+    });
+
+    res.json({ mensagem: 'Perfil atualizado com sucesso!', usuario: atualizado });
+  } catch (error) {
+    console.error('Erro ao atualizar perfil:', error);
+    res.status(500).json({ erro: 'Erro ao atualizar perfil do usuário.' });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Servidor PRPT rodando na porta ${PORT}`);
 });
