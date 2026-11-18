@@ -971,25 +971,27 @@
             document.getElementById('detalheModal').classList.add('hidden');
         }
 
-        function imprimirDetalhe() {
+function imprimirDetalhe() {
             const titulo = document.getElementById('detalheTitulo').innerText;
             const sub = document.getElementById('detalheSubtitulo').innerText;
             const conteudo = document.getElementById('detalheConteudo').innerHTML;
 
             const win = window.open('', '_blank');
-            win.document.write(`
-                <html><head><title>${titulo}</title>
-                <script src="https://cdn.tailwindcss.com"><\/script>
-                </head><body class="p-8 font-sans text-slate-900">
-                <h1 class="text-xl font-bold border-b pb-2 mb-1">${titulo}</h1>
-                <p class="text-xs text-slate-500 mb-6">${sub}</p>
-                <div class="space-y-4">${conteudo}</div>
-                <script>setTimeout(() => { window.print(); }, 500);<\/script>
-                </body></html>
-            `);
+            const scriptTagOpen = '<' + 'script';
+            const scriptTagClose = '<' + '/script>';
+
+            win.document.write(
+                '<html><head><title>' + titulo + '</title>' +
+                scriptTagOpen + ' src="https://cdn.tailwindcss.com">' + scriptTagClose +
+                '</head><body class="p-8 font-sans text-slate-900">' +
+                '<h1 class="text-xl font-bold border-b pb-2 mb-1">' + titulo + '</h1>' +
+                '<p class="text-xs text-slate-500 mb-6">' + sub + '</p>' +
+                '<div class="space-y-4">' + conteudo + '</div>' +
+                scriptTagOpen + '>setTimeout(function() { window.print(); }, 500);' + scriptTagClose +
+                '</body></html>'
+            );
             win.document.close();
         }
-
         // ==================== EXPORTAÇÃO CSV ====================
         function exportarCSV() {
             const igrejas = (dadosPainel.usuarios || []).filter(u => u.role === 'IGREJA');
