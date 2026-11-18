@@ -379,25 +379,76 @@ app.get('/api/admin/painel/:ano', autenticarToken, exigirPerfil('ADMIN'), async 
         role: true,
         criadoEm: true,
         relatorios: {
-          where: { anoReferencia: ano }
+          where: { anoReferencia: ano },
+          orderBy: { atualizadoEm: 'desc' }
         },
         relatoriosConselho: {
-          where: { anoReferencia: ano }
+          where: { anoReferencia: ano },
+          orderBy: { atualizadoEm: 'desc' }
         },
         relatoriosMinistro: {
-          where: { anoReferencia: ano }
+          where: { anoReferencia: ano },
+          orderBy: { atualizadoEm: 'desc' }
         }
       }
     });
 
-    res.json({ ano, usuarios });
+    const igrejas = usuarios.filter(u => u.role === 'IGREJA');
+    const ministros = usuarios.filter(u => u.role === 'MINISTRO');
+
+    const resumo = {
+      totalIgrejas: igrejas.length,
+      igrejasComEstatistico: igrejas.filter(i => i.relatorios.length > 0).length,
+      igrejasComConselho: igrejas.filter(i => i.relatoriosConselho.length > 0).length,
+      totalMinistrosCadastrados: ministros.length,
+      totalRelatoriosMinistros: usuarios.reduce((acc, u) => acc + u.relatoriosMinistro.length, 0)
+    };
+
+    res.json({ ano, resumo, usuarios });
   } catch (error) {
     console.error('Erro no painel admin:', error);
     res.status(500).json({ erro: 'Erro ao carregar dados administrativos.' });
   }
 });
 
-// Permite ao Admin alterar o perfil de um usuário ou criar novas contas
+// Permite ao Admin criar nova conta (Igreja, Ministro ou Admin) diretamente pelo painel
+app.post('/api/admin/usuarios', autenticarToken, exigirPerfil('ADMIN'), async (req, res) => {
+  try {
+    const { email, senha, nomeIgreja, role } = req.body;
+
+    if (!email || !senha || !nomeIgreja || !role) {
+      return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+    }
+
+    if (!['IGREJA', 'MINISTRO', 'ADMIN'].includes(role)) {
+      return res.status(400).json({ erro: 'Perfil inválido.' });
+    }
+
+    const existente = await prisma.usuario.findUnique({ where: { email } });
+    if (existente) {
+      return res.status(400).json({ erro: 'Este e-mail já está cadastrado.' });
+    }
+
+    const senhaHash = await bcrypt.hash(senha, 10);
+
+    const novo = await prisma.usuario.create({
+      data: {
+        email,
+        senha: senhaHash,
+        nomeIgreja,
+        role
+      },
+      select: { id: true, email: true, nomeIgreja: true, role: true, criadoEm: true }
+    });
+
+    res.status(201).json({ mensagem: 'Conta criada com sucesso!', usuario: novo });
+  } catch (error) {
+    console.error('Erro ao criar usuário (Admin):', error);
+    res.status(500).json({ erro: 'Erro interno ao criar conta.' });
+  }
+});
+
+// Permite ao Admin alterar o perfil de um usuário
 app.patch('/api/admin/usuario/:id/role', autenticarToken, exigirPerfil('ADMIN'), async (req, res) => {
   try {
     const { id } = req.params;
@@ -417,6 +468,23 @@ app.patch('/api/admin/usuario/:id/role', autenticarToken, exigirPerfil('ADMIN'),
   } catch (error) {
     console.error('Erro ao atualizar perfil:', error);
     res.status(500).json({ erro: 'Erro ao atualizar perfil do usuário.' });
+  }
+});
+
+// Permite ao Admin excluir um usuário
+app.delete('/api/admin/usuario/:id', autenticarToken, exigirPerfil('ADMIN'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (id === req.usuario.id) {
+      return res.status(400).json({ erro: 'Você não pode excluir sua própria conta de administrador.' });
+    }
+
+    await prisma.usuario.delete({ where: { id } });
+    res.json({ mensagem: 'Usuário excluído com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao excluir usuário:', error);
+    res.status(500).json({ erro: 'Erro ao excluir usuário. Verifique se há registros vinculados.' });
   }
 });
 
