@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full bg-slate-100">
+<html lang="pt-BR" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acesso ao Sistema — Presbitério de Ribeirão Preto</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
@@ -22,170 +24,231 @@
                     }
                 }
             }
-        };
+        }
     </script>
 </head>
-<body class="h-full flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 font-sans">
+<body class="h-full flex flex-col justify-between font-sans text-slate-800 bg-gradient-to-br from-slate-100 via-emerald-50/40 to-slate-100">
 
-    <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <a href="./index.html" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-church-800 hover:underline mb-4">
-            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-            <span>Voltar ao Portal do Presbitério</span>
-        </a>
-        <div class="mx-auto w-14 h-14 bg-church-900 text-emerald-400 rounded-2xl flex items-center justify-center shadow-md mb-3">
-            <i data-lucide="landmark" class="w-8 h-8"></i>
+    <!-- Top Header -->
+    <header class="bg-church-900 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="./index.html" class="flex items-center space-x-3 hover:opacity-90 transition">
+                <i data-lucide="church" class="w-7 h-7 text-emerald-400"></i>
+                <div>
+                    <h1 class="text-base font-bold leading-tight">Presbitério de Ribeirão Preto</h1>
+                    <p class="text-xs text-emerald-200">Igreja Presbiteriana do Brasil • Sínodo Oeste de São Paulo</p>
+                </div>
+            </a>
+
+            <a href="./index.html" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-emerald-100 rounded-lg text-sm font-medium transition flex items-center gap-1.5 border border-church-700">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Voltar ao Portal</span>
+            </a>
         </div>
-        <h1 class="text-2xl font-extrabold text-slate-900">Presbitério de Ribeirão Preto</h1>
-        <p id="subtituloAcesso" class="text-sm text-slate-600 mt-1">Portal de Relatórios & Administração</p>
-    </div>
+    </header>
 
-    <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-7 px-6 shadow-lg rounded-2xl border border-slate-200 sm:px-8">
+    <!-- Main Auth Card -->
+    <main class="flex-1 flex items-center justify-center px-4 py-10">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
 
-            <!-- Abas Entrar / Criar Conta -->
-            <div id="abasAuth" class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl mb-6">
-                <button type="button" id="btnTabLogin" onclick="alternarModo('login')" class="py-2 text-sm font-bold rounded-lg bg-white text-church-900 shadow-sm transition">
+            <!-- Banner Superior Dinâmico conforme Perfil na URL -->
+            <div id="authHeaderBanner" class="bg-church-800 text-white p-6 text-center">
+                <div id="authIconWrapper" class="w-12 h-12 rounded-xl bg-emerald-700/80 border border-emerald-500/40 flex items-center justify-center mx-auto mb-3">
+                    <i data-lucide="lock" class="w-6 h-6 text-emerald-300"></i>
+                </div>
+                <h2 id="authTitulo" class="text-xl font-bold">Sistema Estatístico & Conciliar</h2>
+                <p id="authSubtitulo" class="text-xs text-emerald-200 mt-1">Entre com suas credenciais institucionais para continuar</p>
+            </div>
+
+            <!-- Tabs Entrar / Criar Conta -->
+            <div id="tabsContainer" class="grid grid-cols-2 border-b border-slate-200 bg-slate-50">
+                <button type="button" id="tabLogin" onclick="alternarModo('login')" class="py-3 text-sm font-bold text-church-800 bg-white border-b-2 border-church-700 transition">
                     Entrar
                 </button>
-                <button type="button" id="btnTabCadastro" onclick="alternarModo('cadastro')" class="py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition">
-                    Criar Conta
+                <button type="button" id="tabCadastro" onclick="alternarModo('cadastro')" class="py-3 text-sm font-medium text-slate-500 hover:text-slate-800 transition">
+                    Primeiro Acesso
                 </button>
             </div>
 
-            <!-- Alerta de Feedback -->
-            <div id="alertaBox" class="hidden mb-4 p-3 rounded-lg text-sm font-medium"></div>
+            <div class="p-6 sm:p-8">
+                <!-- Alerta Inline -->
+                <div id="alertaBox" class="hidden mb-4 p-3.5 rounded-lg text-xs font-medium border"></div>
 
-            <!-- FORMULÁRIO DE LOGIN -->
-            <form id="formLogin" onsubmit="executarLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">E-mail de Acesso</label>
-                    <input type="email" id="loginEmail" required placeholder="seuemail@exemplo.com" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-church-600 focus:border-church-600 outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Senha</label>
-                    <input type="password" id="loginSenha" required placeholder="••••••••" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-church-600 focus:border-church-600 outline-none">
-                </div>
-
-                <button type="submit" id="btnSubmitLogin" class="w-full py-2.5 px-4 bg-church-800 hover:bg-church-900 text-white font-bold rounded-xl text-sm transition shadow-sm flex items-center justify-center space-x-2">
-                    <span>Acessar Sistema</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </button>
-            </form>
-
-            <!-- FORMULÁRIO DE CADASTRO (IGREJA OU MINISTRO) -->
-            <form id="formCadastro" onsubmit="executarCadastro(event)" class="hidden space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-800 mb-1.5">Tipo de Usuário *</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="cadRole" value="IGREJA" checked onchange="atualizarLabelCadastro()" class="peer sr-only">
-                            <div class="p-3 rounded-xl border border-slate-300 peer-checked:border-church-700 peer-checked:bg-church-50 text-center transition">
-                                <i data-lucide="church" class="w-5 h-5 mx-auto mb-1 text-church-800"></i>
-                                <span class="text-xs font-bold text-slate-800 block">Igreja Local</span>
-                                <span class="text-[11px] text-slate-500">Rel. Estatístico & Conselho</span>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="cadRole" value="MINISTRO" onchange="atualizarLabelCadastro()" class="peer sr-only">
-                            <div class="p-3 rounded-xl border border-slate-300 peer-checked:border-church-700 peer-checked:bg-church-50 text-center transition">
-                                <i data-lucide="book-open-check" class="w-5 h-5 mx-auto mb-1 text-church-800"></i>
-                                <span class="text-xs font-bold text-slate-800 block">Pastor / Ministro</span>
-                                <span class="text-[11px] text-slate-500">Relatório do Ministro</span>
-                            </div>
-                        </label>
+                <!-- FORMULÁRIO DE LOGIN -->
+                <form id="formLogin" onsubmit="realizarLogin(event)" class="space-y-4">
+                    <div>
+                        <label for="loginEmail" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">E-mail Cadastrado</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                <i data-lucide="mail" class="w-4 h-4"></i>
+                            </span>
+                            <input type="email" id="loginEmail" required placeholder="seuemail@igreja.org.br" class="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600 focus:border-church-600">
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <label id="labelNomeEntidade" class="block text-sm font-medium text-slate-700 mb-1">Nome da Igreja *</label>
-                    <input type="text" id="cadNome" required placeholder="Ex: Igreja Presbiteriana de..." class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm outline-none focus:border-church-600">
-                </div>
+                    <div>
+                        <label for="loginSenha" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Senha</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                <i data-lucide="key-round" class="w-4 h-4"></i>
+                            </span>
+                            <input type="password" id="loginSenha" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600 focus:border-church-600">
+                        </div>
+                    </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">E-mail *</label>
-                    <input type="email" id="cadEmail" required placeholder="contato@exemplo.com" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm outline-none focus:border-church-600">
-                </div>
+                    <button type="submit" id="btnEntrar" class="w-full py-2.5 px-4 bg-church-700 hover:bg-church-800 text-white font-semibold rounded-lg text-sm shadow-sm transition flex items-center justify-center gap-2">
+                        <i data-lucide="log-in" class="w-4 h-4"></i>
+                        <span>Acessar Sistema</span>
+                    </button>
+                </form>
 
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Senha *</label>
-                    <input type="password" id="cadSenha" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm outline-none focus:border-church-600">
-                </div>
+                <!-- FORMULÁRIO DE CADASTRO -->
+                <form id="formCadastro" onsubmit="realizarCadastro(event)" class="hidden space-y-4">
+                    <div>
+                        <label for="cadPerfil" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Tipo de Conta *</label>
+                        <select id="cadPerfil" onchange="atualizarPlaceholderCadastro()" class="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600 bg-white">
+                            <option value="IGREJA">Igreja Local / Congregação Presbiterial</option>
+                            <option value="MINISTRO">Pastor / Ministro Presbiteriano</option>
+                        </select>
+                    </div>
 
-                <button type="submit" id="btnSubmitCadastro" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition shadow-sm">
-                    Criar Conta
-                </button>
-            </form>
+                    <div>
+                        <label id="labelCadNome" for="cadNome" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Nome da Igreja Local *</label>
+                        <input type="text" id="cadNome" required placeholder="Ex: Igreja Presbiteriana Central de Ribeirão Preto" class="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600">
+                    </div>
 
+                    <div>
+                        <label for="cadEmail" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">E-mail Institucional *</label>
+                        <input type="email" id="cadEmail" required placeholder="secretaria@igreja.org.br" class="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600">
+                    </div>
+
+                    <div>
+                        <label for="cadSenha" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Crie uma Senha *</label>
+                        <input type="password" id="cadSenha" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600">
+                    </div>
+
+                    <button type="submit" id="btnCadastrar" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm shadow-sm transition flex items-center justify-center gap-2">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        <span>Criar Conta e Continuar</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-xs text-slate-500">
+        Presbitério de Ribeirão Preto (PRPT) • Secretaria Executiva
+    </footer>
+
+    <!-- Modal de Bloqueio de Acesso Administrativo -->
+    <div id="modalAcessoAdminNegado" class="hidden fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 text-center">
+            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="shield-alert" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Acesso Administrativo Negado</h3>
+            <p class="text-sm text-slate-600 mb-6">Seu perfil não é administrativo ou seus dados de login estão incorretos.</p>
+            <button type="button" onclick="window.location.href = './index.html'" class="w-full py-2.5 px-4 bg-church-700 hover:bg-church-800 text-white font-semibold rounded-lg text-sm transition">
+                OK
+            </button>
         </div>
     </div>
 
     <script>
-        var API_URL = 'https://sistema-relatorio-igreja.onrender.com/api';
+        const API_URL = 'https://sistema-relatorio-igreja.onrender.com/api';
 
-        window.addEventListener('DOMContentLoaded', function() {
-            if (window.lucide) lucide.createIcons();
+        // Lê parâmetros da URL (?perfil=admin | ?perfil=ministro | ?perfil=igreja | ?tipo=admin)
+        const urlParams = new URLSearchParams(window.location.search);
+        const perfilParam = (urlParams.get('perfil') || urlParams.get('tipo') || '').toLowerCase();
+        const modoAdminSolicitado = perfilParam === 'admin';
 
-            var params = new URLSearchParams(window.location.search);
-            var perfilParam = params.get('perfil');
-
-            if (perfilParam === 'admin') {
-                document.getElementById('subtituloAcesso').innerText = 'Acesso Restrito — Secretaria Executiva (Admin)';
-                document.getElementById('abasAuth').classList.add('hidden');
-            } else if (perfilParam === 'ministro') {
-                document.getElementById('subtituloAcesso').innerText = 'Acesso do Pastor / Ministro Presbiteriano';
-                var radioMin = document.querySelector('input[name="cadRole"][value="MINISTRO"]');
-                if (radioMin) { radioMin.checked = true; atualizarLabelCadastro(); }
-            } else if (perfilParam === 'igreja') {
-                document.getElementById('subtituloAcesso').innerText = 'Acesso da Igreja Local / Conselho';
-            }
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            configurarVisualPorPerfil();
         });
 
+        function configurarVisualPorPerfil() {
+            const titulo = document.getElementById('authTitulo');
+            const subtitulo = document.getElementById('authSubtitulo');
+            const banner = document.getElementById('authHeaderBanner');
+            const tabsContainer = document.getElementById('tabsContainer');
+
+            if (modoAdminSolicitado) {
+                banner.className = 'bg-slate-900 text-white p-6 text-center';
+                titulo.innerText = 'Acesso Administrativo — PRPT';
+                subtitulo.innerText = 'Área restrita à Mesa Administrativa e Secretaria Executiva';
+                // Oculta aba de cadastro público quando o acesso é administrativo
+                tabsContainer.classList.add('hidden');
+            } else if (perfilParam === 'ministro') {
+                titulo.innerText = 'Acesso do Pastor / Ministro';
+                subtitulo.innerText = 'Relatório Individual do Ministro Presbiteriano';
+                document.getElementById('cadPerfil').value = 'MINISTRO';
+                atualizarPlaceholderCadastro();
+            } else if (perfilParam === 'igreja') {
+                titulo.innerText = 'Acesso da Igreja Local';
+                subtitulo.innerText = 'Relatório Estatístico/Financeiro e Relatório do Conselho';
+                document.getElementById('cadPerfil').value = 'IGREJA';
+                atualizarPlaceholderCadastro();
+            }
+        }
+
         function alternarModo(modo) {
+            const formLogin = document.getElementById('formLogin');
+            const formCadastro = document.getElementById('formCadastro');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabCadastro = document.getElementById('tabCadastro');
             ocultarAlerta();
-            var formLogin = document.getElementById('formLogin');
-            var formCad = document.getElementById('formCadastro');
-            var btnLogin = document.getElementById('btnTabLogin');
-            var btnCad = document.getElementById('btnTabCadastro');
 
             if (modo === 'login') {
                 formLogin.classList.remove('hidden');
-                formCad.classList.add('hidden');
-                btnLogin.className = 'py-2 text-sm font-bold rounded-lg bg-white text-church-900 shadow-sm transition';
-                btnCad.className = 'py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition';
+                formCadastro.classList.add('hidden');
+                tabLogin.className = 'py-3 text-sm font-bold text-church-800 bg-white border-b-2 border-church-700 transition';
+                tabCadastro.className = 'py-3 text-sm font-medium text-slate-500 hover:text-slate-800 transition';
             } else {
                 formLogin.classList.add('hidden');
-                formCad.classList.remove('hidden');
-                btnCad.className = 'py-2 text-sm font-bold rounded-lg bg-white text-church-900 shadow-sm transition';
-                btnLogin.className = 'py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition';
+                formCadastro.classList.remove('hidden');
+                tabCadastro.className = 'py-3 text-sm font-bold text-church-800 bg-white border-b-2 border-church-700 transition';
+                tabLogin.className = 'py-3 text-sm font-medium text-slate-500 hover:text-slate-800 transition';
             }
         }
 
-        function atualizarLabelCadastro() {
-            var tipo = document.querySelector('input[name="cadRole"]:checked').value;
-            var label = document.getElementById('labelNomeEntidade');
-            var input = document.getElementById('cadNome');
+        function atualizarPlaceholderCadastro() {
+            const perfil = document.getElementById('cadPerfil').value;
+            const label = document.getElementById('labelCadNome');
+            const input = document.getElementById('cadNome');
 
-            if (tipo === 'MINISTRO') {
+            if (perfil === 'MINISTRO') {
                 label.innerText = 'Nome Completo do Ministro *';
                 input.placeholder = 'Ex: Rev. João da Silva';
             } else {
-                label.innerText = 'Nome da Igreja *';
-                input.placeholder = 'Ex: Igreja Presbiteriana Central de...';
+                label.innerText = 'Nome da Igreja Local *';
+                input.placeholder = 'Ex: Igreja Presbiteriana Central de Ribeirão Preto';
             }
         }
 
-        function mostrarAlerta(msg, tipo) {
-            var box = document.getElementById('alertaBox');
-            box.innerText = msg;
-            box.className = tipo === 'erro'
-                ? 'mb-4 p-3 rounded-lg text-sm font-medium bg-rose-50 text-rose-800 border border-rose-200'
-                : 'mb-4 p-3 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-800 border border-emerald-200';
+        function mostrarAlerta(tipo, mensagem) {
+            const box = document.getElementById('alertaBox');
+            box.className = 'mb-4 p-3.5 rounded-lg text-xs font-medium border ' +
+                (tipo === 'erro'
+                    ? 'bg-rose-50 border-rose-200 text-rose-800'
+                    : 'bg-emerald-50 border-emerald-200 text-emerald-800');
+            box.innerText = mensagem;
             box.classList.remove('hidden');
         }
 
         function ocultarAlerta() {
             document.getElementById('alertaBox').classList.add('hidden');
+        }
+
+        function exibirModalAdminNegado() {
+            localStorage.removeItem('token_igreja');
+            localStorage.removeItem('nome_igreja');
+            localStorage.removeItem('role_igreja');
+
+            const modal = document.getElementById('modalAcessoAdminNegado');
+            modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
         }
 
         function redirecionarPorPerfil(role) {
@@ -198,66 +261,114 @@
             }
         }
 
-        async function executarLogin(e) {
+        async function realizarLogin(e) {
             e.preventDefault();
             ocultarAlerta();
-            var email = document.getElementById('loginEmail').value.trim();
-            var senha = document.getElementById('loginSenha').value;
-            var btn = document.getElementById('btnSubmitLogin');
+
+            const btn = document.getElementById('btnEntrar');
+            const textoOriginal = btn.innerHTML;
             btn.disabled = true;
+            btn.innerHTML = '<span>Autenticando...</span>';
+
+            const email = document.getElementById('loginEmail').value.trim();
+            const senha = document.getElementById('loginSenha').value;
 
             try {
-                var res = await fetch(API_URL + '/auth/login', {
+                const res = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, senha: senha })
+                    body: JSON.stringify({ email, senha })
                 });
-                var data = await res.json();
 
-                if (res.ok) {
-                    localStorage.setItem('token_igreja', data.token);
-                    localStorage.setItem('nome_igreja', data.nomeIgreja);
-                    localStorage.setItem('role_igreja', data.role || 'IGREJA');
-                    redirecionarPorPerfil(data.role || 'IGREJA');
-                } else {
-                    mostrarAlerta(data.erro || 'Falha no login.', 'erro');
+                const data = await res.json();
+
+                if (!res.ok) {
+                    if (modoAdminSolicitado) {
+                        exibirModalAdminNegado();
+                    } else {
+                        mostrarAlerta('erro', data.erro || 'E-mail ou senha incorretos.');
+                    }
+                    return;
                 }
+
+                // Se entrou pela opção Administrativa, mas a conta não tem perfil ADMIN
+                if (modoAdminSolicitado && data.role !== 'ADMIN') {
+                    exibirModalAdminNegado();
+                    return;
+                }
+
+                // Salva sessão e direciona conforme o perfil real da conta
+                localStorage.setItem('token_igreja', data.token);
+                localStorage.setItem('nome_igreja', data.nomeIgreja);
+                localStorage.setItem('role_igreja', data.role || 'IGREJA');
+
+                redirecionarPorPerfil(data.role);
             } catch (err) {
-                mostrarAlerta('Erro ao conectar com o servidor. Aguarde alguns segundos e tente novamente.', 'erro');
+                console.error('Erro no login:', err);
+                mostrarAlerta('erro', 'Não foi possível conectar ao servidor. Aguarde alguns segundos e tente novamente.');
             } finally {
                 btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+                if (window.lucide) lucide.createIcons();
             }
         }
 
-        async function executarCadastro(e) {
+        async function realizarCadastro(e) {
             e.preventDefault();
             ocultarAlerta();
-            var role = document.querySelector('input[name="cadRole"]:checked').value;
-            var nomeIgreja = document.getElementById('cadNome').value.trim();
-            var email = document.getElementById('cadEmail').value.trim();
-            var senha = document.getElementById('cadSenha').value;
-            var btn = document.getElementById('btnSubmitCadastro');
+
+            const btn = document.getElementById('btnCadastrar');
+            const textoOriginal = btn.innerHTML;
             btn.disabled = true;
+            btn.innerHTML = '<span>Criando conta...</span>';
+
+            const payload = {
+                role: document.getElementById('cadPerfil').value,
+                nomeIgreja: document.getElementById('cadNome').value.trim(),
+                email: document.getElementById('cadEmail').value.trim(),
+                senha: document.getElementById('cadSenha').value
+            };
 
             try {
-                var res = await fetch(API_URL + '/auth/cadastro', {
+                const res = await fetch(`${API_URL}/auth/cadastro`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, senha: senha, nomeIgreja: nomeIgreja, role: role })
+                    body: JSON.stringify(payload)
                 });
-                var data = await res.json();
 
-                if (res.ok) {
-                    alternarModo('login');
-                    document.getElementById('loginEmail').value = email;
-                    mostrarAlerta('Conta criada com sucesso! Faça login para continuar.', 'sucesso');
+                const data = await res.json();
+
+                if (!res.ok) {
+                    mostrarAlerta('erro', data.erro || 'Não foi possível concluir o cadastro.');
+                    return;
+                }
+
+                mostrarAlerta('sucesso', 'Conta criada com sucesso! Fazendo login...');
+
+                // Realiza login automático após o cadastro
+                const loginRes = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: payload.email, senha: payload.senha })
+                });
+
+                const loginData = await loginRes.json();
+                if (loginRes.ok) {
+                    localStorage.setItem('token_igreja', loginData.token);
+                    localStorage.setItem('nome_igreja', loginData.nomeIgreja);
+                    localStorage.setItem('role_igreja', loginData.role || payload.role);
+                    redirecionarPorPerfil(loginData.role || payload.role);
                 } else {
-                    mostrarAlerta(data.erro || 'Erro ao criar conta.', 'erro');
+                    alternarModo('login');
+                    mostrarAlerta('sucesso', 'Conta criada! Agora entre com seu e-mail e senha.');
                 }
             } catch (err) {
-                mostrarAlerta('Erro ao conectar com o servidor.', 'erro');
+                console.error('Erro no cadastro:', err);
+                mostrarAlerta('erro', 'Erro de conexão com o servidor.');
             } finally {
                 btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+                if (window.lucide) lucide.createIcons();
             }
         }
     </script>
