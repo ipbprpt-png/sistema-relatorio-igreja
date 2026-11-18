@@ -386,6 +386,20 @@
         </div>
     </div>
 
+    <!-- Modal de Acesso Negado (Perfil Não Administrativo) -->
+    <div id="acessoNegadoModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 text-center">
+            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="shield-alert" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Acesso Restrito</h3>
+            <p class="text-sm text-slate-600 mb-6">Seu perfil não é administrativo ou seus dados de login estão incorretos.</p>
+            <button type="button" onclick="window.location.href = './index.html'" class="w-full py-2.5 px-4 bg-church-700 hover:bg-church-800 text-white font-semibold rounded-lg text-sm transition">
+                OK
+            </button>
+        </div>
+    </div>
+
     <script>
         const API_URL = 'https://sistema-relatorio-igreja.onrender.com/api';
         const token = localStorage.getItem('token_igreja');
@@ -394,19 +408,27 @@
 
         let dadosPainel = { ano: 2026, resumo: {}, usuarios: [] };
 
-        // Proteção de Acesso Exclusiva para ADMIN
-        if (!token) {
-            window.location.href = './login.html';
-        } else if (roleUsuario !== 'ADMIN') {
-            if (roleUsuario === 'MINISTRO') {
-                window.location.href = './ministros.html';
+        function bloquearAcessoNaoAdmin() {
+            document.querySelector('main')?.classList.add('hidden');
+            document.querySelector('header')?.classList.add('hidden');
+            const modal = document.getElementById('acessoNegadoModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
             } else {
-                window.location.href = './relatorio-estatistico.html';
+                alert('Seu perfil não é administrativo ou seus dados de login estão incorretos.');
+                window.location.href = './index.html';
             }
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
+
+            if (!token || roleUsuario !== 'ADMIN') {
+                bloquearAcessoNaoAdmin();
+                return;
+            }
+
             if (nomeUsuario) {
                 document.getElementById('adminNomeHeader').innerText = `${nomeUsuario} • Secretaria Executiva PRPT`;
             }
@@ -460,7 +482,7 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-               if (res.status === 401 || res.status === 403) {
+                if (res.status === 401 || res.status === 403) {
                     bloquearAcessoNaoAdmin();
                     return;
                 }
@@ -617,7 +639,7 @@
                 return;
             }
 
-            tbody.innerHTML = filtrados.map((rm, idx) => {
+            tbody.innerHTML = filtrados.map(rm => {
                 const campo = rm.identificacaoCampo?.campo_trabalho || rm.identificacaoCampo?.igreja_campo || rm.identificacaoCampo?.situacao || '—';
                 const dataFmt = rm.atualizadoEm ? new Date(rm.atualizadoEm).toLocaleDateString('pt-BR') : '—';
 
@@ -654,7 +676,6 @@
             const sumInt = (bloco, campo) => relatorios.reduce((acc, r) => acc + (parseInt(r[bloco]?.[campo]) || 0), 0);
             const sumMoney = (bloco, campo) => relatorios.reduce((acc, r) => acc + parseBRL(r[bloco]?.[campo]), 0);
 
-            // 1. Estrutura & Departamentos
             const estruturaItens = [
                 ['Congregações', sumInt('estruturaDados', 'congregacoes')],
                 ['Escolas Bíblicas (EBD)', sumInt('estruturaDados', 'escolas')],
@@ -675,7 +696,6 @@
                 </div>
             `).join('');
 
-            // 2. Rol de Membros
             const comAnt = sumInt('rolMembros', 'c_ant_m') + sumInt('rolMembros', 'c_ant_f');
             const comAdm = sumInt('rolMembros', 'tot_c_adm_m') + sumInt('rolMembros', 'tot_c_adm_f');
             const comDem = sumInt('rolMembros', 'tot_c_dem_m') + sumInt('rolMembros', 'tot_c_dem_f');
@@ -706,7 +726,6 @@
                 </div>
             `).join('');
 
-            // 3. Receitas Consolidado
             const rubricasRec = [
                 ['Saldo Anterior', 'rec_saldo'],
                 ['Dízimos', 'rec_dizimos'],
@@ -734,7 +753,6 @@
                 `;
             }).join('');
 
-            // 4. Despesas Consolidado
             const rubricasDesp = [
                 ['Patrimônio', 'desp_pat'],
                 ['Causas Locais', 'desp_locais'],
@@ -1020,19 +1038,6 @@
             localStorage.removeItem('role_igreja');
             window.location.href = './login.html';
         }
-<!-- Modal de Acesso Negado -->
-    <div id="acessoNegadoModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 text-center">
-            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="shield-alert" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-2">Acesso Restrito</h3>
-            <p class="text-sm text-slate-600 mb-6">Seu perfil não é administrativo ou seus dados de login estão incorretos.</p>
-            <button type="button" onclick="window.location.href = './index.html'" class="w-full py-2.5 px-4 bg-church-700 hover:bg-church-800 text-white font-semibold rounded-lg text-sm transition">
-                OK
-            </button>
-        </div>
-    </div>
-</script>
+    </script>
 </body>
 </html>
