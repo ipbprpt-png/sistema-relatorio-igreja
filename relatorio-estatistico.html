@@ -54,19 +54,19 @@
                     <i data-lucide="church" class="w-8 h-8 text-emerald-400"></i>
                     <div>
                         <h1 class="text-lg font-bold leading-tight">Relatório Estatístico & Financeiro Anual</h1>
-                        <p class="text-xs text-emerald-200">Secretaria & Tesouraria Geral</p>
+                        <p class="text-xs text-emerald-200">Secretaria & Tesouraria Geral — Presbitério de Ribeirão Preto</p>
                     </div>
                 </div>
                 
                 <!-- Action Controls -->
                 <div class="flex items-center space-x-2">
-                    <a href="./ministros.html" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-emerald-500">
-                        <i data-lucide="user-plus" class="w-4 h-4"></i>
-                        <span>Rel. Ministros</span>
+                    <a href="./index.html" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-emerald-200 hover:text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-church-700">
+                        <i data-lucide="landmark" class="w-4 h-4"></i>
+                        <span class="hidden xl:inline">Portal PRPT</span>
                     </a>
                     <a href="./conselho.html" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-emerald-500">
                         <i data-lucide="file-text" class="w-4 h-4"></i>
-                        <span class="hidden lg:inline">Ir para Rel. Conselho</span>
+                        <span>Rel. Conselho</span>
                     </a>
                     <button type="button" onclick="resetForm()" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-slate-200 hover:text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-church-700">
                         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
@@ -101,27 +101,27 @@
         <!-- Tab Navigation (Desktop & Mobile Scrollable) -->
         <div class="no-print mb-6 border-b border-slate-200 bg-white rounded-t-xl shadow-sm overflow-hidden">
             <nav class="flex overflow-x-auto py-2 px-3 space-x-2 no-scrollbar" aria-label="Blocos do Formulário" id="tabNav">
-                <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn active px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 bg-church-50 text-church-800 border border-church-200">
+                <button type="button" onclick="switchTab(1)" id="tab-btn-1" class="tab-btn active px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 bg-church-50 text-church-800 border border-church-200">
                     <span class="w-5 h-5 rounded-full bg-church-600 text-white flex items-center justify-center text-xs">I</span>
                     <span>Estrutura</span>
                 </button>
-                <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                <button type="button" onclick="switchTab(2)" id="tab-btn-2" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
                     <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">II</span>
                     <span>Departamentos</span>
                 </button>
-                <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                <button type="button" onclick="switchTab(3)" id="tab-btn-3" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
                     <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">III</span>
                     <span>Rol de Membros</span>
                 </button>
-                <button onclick="switchTab(4)" id="tab-btn-4" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                <button type="button" onclick="switchTab(4)" id="tab-btn-4" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
                     <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">IV</span>
                     <span>Finanças (Ano Anterior)</span>
                 </button>
-                <button onclick="switchTab(5)" id="tab-btn-5" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                <button type="button" onclick="switchTab(5)" id="tab-btn-5" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
                     <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">V</span>
                     <span>Orçamento (Ano Seguinte)</span>
                 </button>
-                <button onclick="switchTab(6)" id="tab-btn-6" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
+                <button type="button" onclick="switchTab(6)" id="tab-btn-6" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100">
                     <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-xs">VI</span>
                     <span>Informações Finais</span>
                 </button>
@@ -335,7 +335,7 @@
                                     <td><input type="number" readonly id="tot_c_dem_f" name="tot_c_dem_f" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
                                     <td><input type="number" readonly id="tot_c_dem_t" name="tot_c_dem_t" class="w-full text-center py-1 bg-transparent border-0 font-bold text-emerald-900" value="0"></td>
                                 </tr>
-                               <tr class="bg-slate-100 font-bold">
+                                <tr class="bg-slate-100 font-bold">
                                     <td class="py-2.5 px-4 text-slate-800">Rol Separado</td>
                                     <td><input type="number" min="0" id="rol_sep_c_m" name="rol_sep_c_m" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
                                     <td><input type="number" min="0" id="rol_sep_c_f" name="rol_sep_c_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
@@ -347,7 +347,11 @@
                                     <td><input type="number" min="0" id="c_ant_f" name="c_ant_f" class="w-full text-center py-1 border rounded border-slate-300 bg-white" oninput="calcMembros()"></td>
                                     <td><input type="number" readonly id="c_ant_t" name="c_ant_t" class="w-full text-center py-1 bg-transparent border-0 font-bold" value="0"></td>
                                 </tr>
-                     </div>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- 2. NÃO COMUNGANTES -->
                 <div>
                     <h3 class="text-md font-bold text-slate-800 bg-slate-100 p-2.5 rounded-lg border border-slate-200 mb-3 flex items-center gap-2">
@@ -807,10 +811,10 @@
     <script>
         let currentTab = 1;
         const totalTabs = 6;
-        const API_URL = 'https://sistema-relatorio-igreja.onrender.com/api'; // Altere para a URL do Render em produção
+        const API_URL = 'https://sistema-relatorio-igreja.onrender.com/api';
         const token = localStorage.getItem('token_igreja');
+        const roleUsuario = localStorage.getItem('role_igreja');
 
-        // Função segura para redirecionamento
         function redirecionarParaLogin() {
             try {
                 window.location.href = './login.html';
@@ -819,9 +823,13 @@
             }
         }
 
-        // 1. Proteção de Acesso
+        // Proteção de Acesso por Perfil
         if (!token) {
             redirecionarParaLogin();
+        } else if (roleUsuario === 'MINISTRO') {
+            window.location.href = './ministros.html';
+        } else if (roleUsuario === 'ADMIN') {
+            window.location.href = './admin.html';
         }
 
         // Initialize Icons & Event Listeners
@@ -836,18 +844,14 @@
         function switchTab(tabIndex) {
             if (tabIndex < 1 || tabIndex > totalTabs) return;
 
-            // Hide previous tab content
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             
-            // Unhighlight tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.className = "tab-btn px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 text-slate-600 hover:bg-slate-100";
             });
 
-            // Show active tab
             document.getElementById(`block-${tabIndex}`).classList.remove('hidden');
 
-            // Highlight active tab button
             const activeBtn = document.getElementById(`tab-btn-${tabIndex}`);
             if (activeBtn) {
                 activeBtn.className = "tab-btn active px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition flex items-center space-x-2 bg-church-50 text-church-800 border border-church-200 font-semibold";
@@ -978,7 +982,6 @@
             const rolSepCF = parseInt(document.getElementById('rol_sep_c_f').value) || 0;
             document.getElementById('rol_sep_c_t').value = rolSepCM + rolSepCF;
 
-            // ADICIONE ESTE BLOCO ABAIXO:
             // Comungantes Ano Anterior
             const cAntM = parseInt(document.getElementById('c_ant_m').value) || 0;
             const cAntF = parseInt(document.getElementById('c_ant_f').value) || 0;
@@ -1017,139 +1020,3 @@
             });
 
             document.getElementById('tot_nc_dem_m').value = ncDemM;
-            document.getElementById('tot_nc_dem_f').value = ncDemF;
-            document.getElementById('tot_nc_dem_t').value = ncDemM + ncDemF;
-
-            // Rol Separado Não Comungantes
-            const rolSepNCM = parseInt(document.getElementById('rol_sep_nc_m').value) || 0;
-            const rolSepNCF = parseInt(document.getElementById('rol_sep_nc_f').value) || 0;
-            document.getElementById('rol_sep_nc_t').value = rolSepNCM + rolSepNCF;
-
-            // Não Comungantes Ano Anterior
-            const ncAntM = parseInt(document.getElementById('nc_ant_m').value) || 0;
-            const ncAntF = parseInt(document.getElementById('nc_ant_f').value) || 0;
-            document.getElementById('nc_ant_t').value = ncAntM + ncAntF;
-        }
-
-        // ================= API INTEGRATION & DATA STORAGE =================
-        async function carregarDadosDoBanco() {
-            const ano = 2026;
-            try {
-                const res = await fetch(`${API_URL}/relatorio/${ano}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (res.status === 401 || res.status === 403) {
-                    fazerLogout();
-                    return;
-                }
-
-                if (res.ok) {
-                    const relatorio = await res.json();
-                    preencherFormularioComDadosDoBanco(relatorio);
-                }
-            } catch (err) {
-                console.error('Erro ao buscar dados do banco:', err);
-            }
-        }
-
-        async function salvarRelatorioNoBanco() {
-            const dadosFormulario = {
-                anoReferencia: 2026,
-                estruturaDados: coletarCamposDoBloco('block-1'),
-                departamentos: coletarCamposDoBloco('block-2'),
-                rolMembros: coletarCamposDoBloco('block-3'),
-                financeiroPassado: coletarCamposDoBloco('block-4'),
-                financeiroFuturo: coletarCamposDoBloco('block-5'),
-                informacoesFinais: coletarCamposDoBloco('block-6')
-            };
-
-            try {
-                const resposta = await fetch(`${API_URL}/relatorio/salvar`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(dadosFormulario)
-                });
-
-                const resultado = await resposta.json();
-
-                if (resposta.ok) {
-                    showModal('Sucesso!', 'Relatório salvo com sucesso no banco de dados!');
-                } else {
-                    showModal('Erro ao Salvar', resultado.erro || 'Ocorreu um erro no servidor.');
-                }
-            } catch (err) {
-                showModal('Erro de Conexão', 'Não foi possível conectar ao servidor.');
-            }
-        }
-
-        function coletarCamposDoBloco(containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return {};
-            
-            const inputs = container.querySelectorAll('input, select, textarea');
-            const dados = {};
-            inputs.forEach((input, index) => {
-                const chave = input.name || input.id || `campo_${containerId}_${index}`;
-                dados[chave] = input.value;
-            });
-            return dados;
-        }
-
-        function preencherFormularioComDadosDoBanco(relatorio) {
-            const blocos = ['estruturaDados', 'departamentos', 'rolMembros', 'financeiroPassado', 'financeiroFuturo', 'informacoesFinais'];
-            
-            blocos.forEach(blocoKey => {
-                const bloco = relatorio[blocoKey];
-                if (bloco) {
-                    Object.keys(bloco).forEach(campoChave => {
-                        const campo = document.getElementById(campoChave) || document.querySelector(`[name="${campoChave}"]`);
-                        if (campo) {
-                            campo.value = bloco[campoChave];
-                        }
-                    });
-                }
-            });
-
-            calcMembros();
-            calcFinanceiro(4);
-            calcFinanceiro(5);
-        }
-
-        function resetForm() {
-            if (confirm("Tem certeza que deseja limpar todo o formulário? Os dados não salvos serão perdidos.")) {
-                document.getElementById('churchReportForm').reset();
-                calcMembros();
-                calcFinanceiro(4);
-                calcFinanceiro(5);
-                switchTab(1);
-                showModal('Formulário Limpo', 'Todos os campos foram restaurados ao padrão.');
-            }
-        }
-
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            salvarRelatorioNoBanco();
-        }
-
-        function fazerLogout() {
-            localStorage.removeItem('token_igreja');
-            localStorage.removeItem('nome_igreja');
-            redirecionarParaLogin();
-        }
-
-        function showModal(title, msg) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalMessage').innerText = msg;
-            document.getElementById('customModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('customModal').classList.add('hidden');
-        }
-    </script>
-</body>
-</html>

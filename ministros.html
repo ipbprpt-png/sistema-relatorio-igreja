@@ -96,18 +96,14 @@
                     <i data-lucide="book-open-check" class="w-8 h-8 text-emerald-400"></i>
                     <div>
                         <h1 class="text-lg font-bold leading-tight">Relatório do Ministro Presbiteriano</h1>
-                        <p class="text-xs text-emerald-200">Modelo CSM/IPB-2022.v2.0 — Presbitério</p>
+                        <p class="text-xs text-emerald-200">Modelo CSM/IPB-2022.v2.0 — Presbitério de Ribeirão Preto</p>
                     </div>
                 </div>
                 
                 <div class="flex items-center space-x-2">
-                    <a href="./index.html" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-emerald-500">
-                        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-                        <span class="hidden xl:inline">Rel. Estatístico</span>
-                    </a>
-                    <a href="./conselho.html" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-emerald-500">
-                        <i data-lucide="scroll-text" class="w-4 h-4"></i>
-                        <span class="hidden xl:inline">Rel. Conselho</span>
+                    <a href="./index.html" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-emerald-200 hover:text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-church-700">
+                        <i data-lucide="landmark" class="w-4 h-4"></i>
+                        <span class="hidden lg:inline">Portal PRPT</span>
                     </a>
                     <button type="button" onclick="novoMinistro()" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-slate-200 hover:text-white rounded-md text-sm font-medium transition flex items-center space-x-1.5 border border-church-700">
                         <i data-lucide="plus" class="w-4 h-4"></i>
@@ -142,14 +138,14 @@
         <div class="no-print mb-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-2 text-sm text-slate-700">
                 <i data-lucide="users" class="w-5 h-5 text-church-700"></i>
-                <span class="font-semibold">Ministros registrados neste ano:</span>
+                <span class="font-semibold">Relatórios registrados neste ano:</span>
             </div>
             <div class="flex items-center gap-3">
                 <select id="seletorMinistros" onchange="selecionarMinistroSalvo(this.value)" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 min-w-[240px]">
                     <option value="">-- Novo Relatório de Ministro --</option>
                 </select>
                 <button type="button" onclick="novoMinistro()" class="px-3 py-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-sm font-semibold transition">
-                    + Novo Ministro
+                    + Novo Registro
                 </button>
             </div>
         </div>
@@ -208,19 +204,19 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Sínodo</label>
-                        <input type="text" name="sinodo" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm">
+                        <input type="text" name="sinodo" value="Oeste de São Paulo" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Sigla Sínodo</label>
-                        <input type="text" name="sigla_sinodo" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm uppercase">
+                        <input type="text" name="sigla_sinodo" value="SOP" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm uppercase">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Presbitério</label>
-                        <input type="text" name="presbiterio" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm">
+                        <input type="text" name="presbiterio" value="Ribeirão Preto" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Sigla Presb.</label>
-                        <input type="text" name="sigla_presbiterio" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm uppercase">
+                        <input type="text" name="sigla_presbiterio" value="PRPT" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm uppercase">
                     </div>
                 </div>
 
@@ -682,7 +678,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-200 pt-6">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Local (Cidade/UF) *</label>
-                        <input type="text" name="final_local" required placeholder="Ex: Altinópolis/SP" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                        <input type="text" name="final_local" required placeholder="Ex: Ribeirão Preto/SP" class="w-full px-3 py-2 border border-slate-300 rounded-lg">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Data *</label>
@@ -740,9 +736,14 @@
         var listaRelatoriosSalvos = [];
         var API_URL = 'https://sistema-relatorio-igreja.onrender.com/api';
         var token = localStorage.getItem('token_igreja');
+        var roleUsuario = localStorage.getItem('role_igreja');
 
         if (!token) {
             window.location.href = './login.html';
+        } else if (roleUsuario === 'IGREJA') {
+            window.location.href = './relatorio-estatistico.html';
+        } else if (roleUsuario === 'ADMIN') {
+            window.location.href = './admin.html';
         }
 
         function calcMinistro() {
@@ -803,6 +804,11 @@
                         if (listaRelatoriosSalvos.length > 0 && !document.getElementById('relatorioId').value) {
                             seletor.value = listaRelatoriosSalvos[0].id;
                             preencherFormulario(listaRelatoriosSalvos[0]);
+                        } else if (listaRelatoriosSalvos.length === 0) {
+                            var nomeSalvo = localStorage.getItem('nome_igreja');
+                            if (nomeSalvo && !document.getElementById('nomeMinistro').value) {
+                                document.getElementById('nomeMinistro').value = nomeSalvo;
+                            }
                         }
                     }
                 }
@@ -854,6 +860,8 @@
             document.getElementById('ministroReportForm').reset();
             document.getElementById('relatorioId').value = '';
             document.getElementById('seletorMinistros').value = '';
+            var nomeSalvo = localStorage.getItem('nome_igreja');
+            if (nomeSalvo) document.getElementById('nomeMinistro').value = nomeSalvo;
             calcMinistro();
             window.switchTab(1);
         }
@@ -915,6 +923,7 @@
         function fazerLogout() {
             localStorage.removeItem('token_igreja');
             localStorage.removeItem('nome_igreja');
+            localStorage.removeItem('role_igreja');
             window.location.href = './login.html';
         }
 
