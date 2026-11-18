@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração PRPT — Secretaria Executiva</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        church: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; font-size: 10pt; }
+            .shadow-sm, .shadow-md, .shadow-lg, .shadow-2xl { box-shadow: none !important; }
+            .print-only { display: block !important; }
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="bg-church-900 text-white shadow-md sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between py-3 gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-emerald-800/70 rounded-lg border border-emerald-600/40">
+                        <i data-lucide="shield-check" class="w-7 h-7 text-emerald-400"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold leading-tight">Secretaria Executiva — PRPT</h1>
+                        <p class="text-xs text-emerald-200" id="adminNomeHeader">Presbitério de Ribeirão Preto • Painel Administrativo</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <!-- Seletor de Ano -->
+                    <div class="flex items-center bg-church-800 border border-church-700 rounded-lg px-2.5 py-1">
+                        <label for="selectAno" class="text-xs text-emerald-200 mr-2 font-medium">Exercício:</label>
+                        <select id="selectAno" onchange="carregarPainel()" class="bg-transparent text-white text-sm font-bold focus:outline-none cursor-pointer">
+                            <option value="2026" class="text-slate-900">2026</option>
+                            <option value="2025" class="text-slate-900">2025</option>
+                            <option value="2027" class="text-slate-900">2027</option>
+                        </select>
+                    </div>
+
+                    <button type="button" onclick="carregarPainel()" title="Atualizar dados" class="p-2 bg-church-800 hover:bg-church-700 text-emerald-200 hover:text-white rounded-lg transition border border-church-700">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    </button>
+
+                    <a href="./index.html" class="px-3 py-1.5 bg-church-800 hover:bg-church-700 text-slate-200 hover:text-white rounded-lg text-sm font-medium transition flex items-center space-x-1.5 border border-church-700">
+                        <i data-lucide="landmark" class="w-4 h-4"></i>
+                        <span class="hidden md:inline">Portal</span>
+                    </a>
+
+                    <button type="button" onclick="window.print()" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-semibold rounded-lg text-sm transition flex items-center space-x-1.5 shadow-sm">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Imprimir</span>
+                    </button>
+
+                    <button type="button" onclick="fazerLogout()" class="px-3 py-1.5 bg-rose-800 hover:bg-rose-700 text-white rounded-lg text-sm font-medium transition flex items-center space-x-1.5 border border-rose-700">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span class="hidden md:inline">Sair</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Print Header -->
+    <div class="hidden print-only p-6 text-center border-b border-slate-300 mb-6">
+        <h1 class="text-2xl font-bold uppercase text-slate-900">Presbitério de Ribeirão Preto (PRPT)</h1>
+        <p class="text-sm text-slate-600" id="printSubtitulo">Relatório Consolidado da Secretaria Executiva</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Cards de Indicadores -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase mb-1">
+                    <span>Igrejas Cadastradas</span>
+                    <i data-lucide="church" class="w-4 h-4 text-church-700"></i>
+                </div>
+                <div class="text-2xl font-bold text-slate-900" id="kpiTotalIgrejas">0</div>
+                <p class="text-xs text-slate-500 mt-1" id="kpiIgrejasSub">0 estatísticos • 0 conselhos</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase mb-1">
+                    <span>Comungantes (Atual)</span>
+                    <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
+                </div>
+                <div class="text-2xl font-bold text-emerald-800" id="kpiComungantes">0</div>
+                <p class="text-xs text-slate-500 mt-1" id="kpiNaoComungantes">0 não-comungantes</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase mb-1">
+                    <span>Receita Executada</span>
+                    <i data-lucide="trending-up" class="w-4 h-4 text-emerald-600"></i>
+                </div>
+                <div class="text-xl font-bold text-slate-900 truncate" id="kpiReceita">R$ 0,00</div>
+                <p class="text-xs text-slate-500 mt-1">Soma Bloco IV (Ano Anterior)</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase mb-1">
+                    <span>Orçamento Previsto</span>
+                    <i data-lucide="calculator" class="w-4 h-4 text-sky-600"></i>
+                </div>
+                <div class="text-xl font-bold text-slate-900 truncate" id="kpiOrcamento">R$ 0,00</div>
+                <p class="text-xs text-slate-500 mt-1">Soma Bloco V (Ano Seguinte)</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase mb-1">
+                    <span>Ministros / Relatórios</span>
+                    <i data-lucide="book-open" class="w-4 h-4 text-amber-600"></i>
+                </div>
+                <div class="text-2xl font-bold text-slate-900" id="kpiMinistros">0</div>
+                <p class="text-xs text-slate-500 mt-1" id="kpiMinistrosContas">0 contas de ministros</p>
+            </div>
+        </div>
+
+        <!-- Navegação de Abas -->
+        <div class="no-print mb-6 bg-white rounded-xl shadow-sm border border-slate-200 p-2 flex flex-wrap items-center justify-between gap-2">
+            <nav class="flex flex-wrap gap-1.5" id="adminTabs">
+                <button type="button" onclick="mudarAba('igrejas')" id="btn-tab-igrejas" class="px-4 py-2 rounded-lg text-sm font-semibold bg-church-50 text-church-800 border border-church-200 flex items-center gap-2 transition">
+                    <i data-lucide="building-2" class="w-4 h-4"></i>
+                    <span>Igrejas (Estatístico & Conselho)</span>
+                </button>
+                <button type="button" onclick="mudarAba('ministros')" id="btn-tab-ministros" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition">
+                    <i data-lucide="user-check" class="w-4 h-4"></i>
+                    <span>Relatórios de Ministros</span>
+                </button>
+                <button type="button" onclick="mudarAba('consolidado')" id="btn-tab-consolidado" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span>Consolidado do Presbitério</span>
+                </button>
+                <button type="button" onclick="mudarAba('usuarios')" id="btn-tab-usuarios" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition">
+                    <i data-lucide="user-cog" class="w-4 h-4"></i>
+                    <span>Usuários & Permissões</span>
+                </button>
+            </nav>
+
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="exportarCSV()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
+                    <i data-lucide="download" class="w-4 h-4 text-emerald-400"></i>
+                    <span>Exportar CSV (Excel)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading / Erro Banner -->
+        <div id="statusBanner" class="hidden mb-6 p-4 rounded-xl border text-sm flex items-center justify-between"></div>
+
+        <!-- ================= ABA 1: IGREJAS ================= -->
+        <section id="aba-igrejas" class="aba-panel bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Acompanhamento das Igrejas Locais</h2>
+                    <p class="text-xs text-slate-500">Status de envio do Relatório Estatístico/Financeiro e do Relatório do Conselho.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="filtroIgreja" oninput="renderizarTabelaIgrejas()" placeholder="Filtrar igreja ou e-mail..." class="px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600 w-64">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                            <th class="py-3 px-4">Igreja / Campo</th>
+                            <th class="py-3 px-4 text-center">Estatístico & Fin.</th>
+                            <th class="py-3 px-4 text-center">Rel. Conselho</th>
+                            <th class="py-3 px-4 text-center">Comungantes</th>
+                            <th class="py-3 px-4 text-right">Receita (Bloco IV)</th>
+                            <th class="py-3 px-4 text-center no-print">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyIgrejas" class="divide-y divide-slate-200 text-sm">
+                        <tr><td colspan="6" class="py-8 text-center text-slate-400">Carregando dados...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ================= ABA 2: MINISTROS ================= -->
+        <section id="aba-ministros" class="aba-panel hidden bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Relatórios Individuais dos Ministros</h2>
+                    <p class="text-xs text-slate-500">Relatórios enviados pelos pastores efetivos, auxiliares, evangelistas e jubilados.</p>
+                </div>
+                <input type="text" id="filtroMinistro" oninput="renderizarTabelaMinistros()" placeholder="Buscar ministro ou campo..." class="px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600 w-64">
+            </div>
+
+            <div class="table-responsive">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                            <th class="py-3 px-4">Nome do Ministro</th>
+                            <th class="py-3 px-4">Conta Vinculada</th>
+                            <th class="py-3 px-4">Campo / Designação</th>
+                            <th class="py-3 px-4 text-center">Última Atualização</th>
+                            <th class="py-3 px-4 text-center no-print">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyMinistros" class="divide-y divide-slate-200 text-sm">
+                        <tr><td colspan="5" class="py-8 text-center text-slate-400">Carregando relatórios...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ================= ABA 3: CONSOLIDADO GERAL ================= -->
+        <section id="aba-consolidado" class="aba-panel hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="border-b border-slate-200 pb-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Consolidado Estatístico e Financeiro do Presbitério</h2>
+                        <p class="text-xs text-slate-500">Soma automática de todos os relatórios estatísticos enviados no exercício selecionado.</p>
+                    </div>
+                    <span class="text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full" id="badgeConsolidadoQtd">0 igrejas computadas</span>
+                </div>
+
+                <!-- Grid Consolidado: Estrutura & Membros -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
+                        <h3 class="text-sm font-bold text-church-800 uppercase tracking-wider mb-3">1. Estrutura & Departamentos (Soma PRPT)</h3>
+                        <dl class="divide-y divide-slate-200 text-sm" id="listaConsolidadoEstrutura"></dl>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
+                        <h3 class="text-sm font-bold text-church-800 uppercase tracking-wider mb-3">2. Rol de Membros Consolidado</h3>
+                        <dl class="divide-y divide-slate-200 text-sm" id="listaConsolidadoMembros"></dl>
+                    </div>
+                </div>
+
+                <!-- Grid Consolidado: Finanças -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
+                        <h3 class="text-sm font-bold text-emerald-800 uppercase tracking-wider mb-3">3. Receitas Executadas (Bloco IV) vs. Previstas (Bloco V)</h3>
+                        <div class="table-responsive">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="text-xs text-slate-500 border-b border-slate-200">
+                                        <th class="py-2 text-left">Rubrica</th>
+                                        <th class="py-2 text-right">Executado (B. IV)</th>
+                                        <th class="py-2 text-right">Orçado (B. V)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyConsolidadoReceitas" class="divide-y divide-slate-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
+                        <h3 class="text-sm font-bold text-rose-800 uppercase tracking-wider mb-3">4. Despesas Executadas (Bloco IV) vs. Previstas (Bloco V)</h3>
+                        <div class="table-responsive">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="text-xs text-slate-500 border-b border-slate-200">
+                                        <th class="py-2 text-left">Rubrica</th>
+                                        <th class="py-2 text-right">Executado (B. IV)</th>
+                                        <th class="py-2 text-right">Orçado (B. V)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyConsolidadoDespesas" class="divide-y divide-slate-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABA 4: USUÁRIOS & PERMISSÕES ================= -->
+        <section id="aba-usuarios" class="aba-panel hidden space-y-6">
+            <!-- Form Novo Usuário -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-lg font-bold text-slate-900 mb-1">Cadastrar Nova Conta no Sistema</h2>
+                <p class="text-xs text-slate-500 mb-4">Crie acessos diretos para igrejas locais, ministros ou membros da Mesa Administrativa.</p>
+
+                <form id="formNovoUsuario" onsubmit="criarNovoUsuario(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nome da Igreja ou Ministro *</label>
+                        <input type="text" id="novoNome" required placeholder="Ex: IPB Central / Rev. João" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">E-mail de Acesso *</label>
+                        <input type="email" id="novoEmail" required placeholder="secretaria@igreja.org.br" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Senha Inicial *</label>
+                        <input type="password" id="novoSenha" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Perfil de Acesso *</label>
+                        <select id="novoRole" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-church-600 bg-white">
+                            <option value="IGREJA">IGREJA (Estatístico + Conselho)</option>
+                            <option value="MINISTRO">MINISTRO (Rel. Individual)</option>
+                            <option value="ADMIN">ADMIN (Secretaria Executiva)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="w-full py-2 px-4 bg-church-700 hover:bg-church-800 text-white font-semibold text-sm rounded-lg transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i>
+                            <span>Criar Conta</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabela de Usuários -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Contas Cadastradas</h3>
+                        <p class="text-xs text-slate-500">Altere o nível de permissão ou remova contas duplicadas.</p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                                <th class="py-3 px-4">Nome / Igreja</th>
+                                <th class="py-3 px-4">E-mail</th>
+                                <th class="py-3 px-4">Perfil Atual</th>
+                                <th class="py-3 px-4 text-center">Alterar Perfil</th>
+                                <th class="py-3 px-4 text-center">Remover</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyUsuarios" class="divide-y divide-slate-200 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal de Visualização Detalhada do Relatório -->
+    <div id="detalheModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 bg-church-900 text-white flex items-center justify-between">
+                <div>
+                    <h3 id="detalheTitulo" class="text-lg font-bold">Detalhes do Relatório</h3>
+                    <p id="detalheSubtitulo" class="text-xs text-emerald-200">Presbitério de Ribeirão Preto</p>
+                </div>
+                <button type="button" onclick="fecharDetalheModal()" class="p-1.5 rounded-lg hover:bg-church-800 text-emerald-200 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="detalheConteudo" class="p-6 overflow-y-auto space-y-5 text-sm text-slate-700"></div>
+            <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+                <button type="button" onclick="imprimirDetalhe()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold flex items-center gap-1.5">
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span>Imprimir Ficha</span>
+                </button>
+                <button type="button" onclick="fecharDetalheModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg text-sm font-semibold">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://sistema-relatorio-igreja.onrender.com/api';
+        const token = localStorage.getItem('token_igreja');
+        const roleUsuario = localStorage.getItem('role_igreja');
+        const nomeUsuario = localStorage.getItem('nome_igreja');
+
+        let dadosPainel = { ano: 2026, resumo: {}, usuarios: [] };
+
+        // Proteção de Acesso Exclusiva para ADMIN
+        if (!token) {
+            window.location.href = './login.html';
+        } else if (roleUsuario !== 'ADMIN') {
+            if (roleUsuario === 'MINISTRO') {
+                window.location.href = './ministros.html';
+            } else {
+                window.location.href = './relatorio-estatistico.html';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            lucide.createIcons();
+            if (nomeUsuario) {
+                document.getElementById('adminNomeHeader').innerText = `${nomeUsuario} • Secretaria Executiva PRPT`;
+            }
+            await carregarPainel();
+        });
+
+        function parseBRL(str) {
+            if (!str) return 0;
+            if (typeof str === 'number') return str;
+            const digits = String(str).replace(/[^\d,-]/g, '').replace(/\./g, '').replace(',', '.');
+            const val = parseFloat(digits);
+            return isNaN(val) ? 0 : val;
+        }
+
+        function formatBRL(num) {
+            return (num || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function calcComungantesAtuais(rol) {
+            if (!rol) return 0;
+            const ant = (parseInt(rol.c_ant_m) || 0) + (parseInt(rol.c_ant_f) || 0);
+            const adm = (parseInt(rol.tot_c_adm_m) || 0) + (parseInt(rol.tot_c_adm_f) || 0);
+            const dem = (parseInt(rol.tot_c_dem_m) || 0) + (parseInt(rol.tot_c_dem_f) || 0);
+            return ant + adm - dem;
+        }
+
+        function calcNaoComungantesAtuais(rol) {
+            if (!rol) return 0;
+            const ant = (parseInt(rol.nc_ant_m) || 0) + (parseInt(rol.nc_ant_f) || 0);
+            const adm = (parseInt(rol.tot_nc_adm_m) || 0) + (parseInt(rol.tot_nc_adm_f) || 0);
+            const dem = (parseInt(rol.tot_nc_dem_m) || 0) + (parseInt(rol.tot_nc_dem_f) || 0);
+            return ant + adm - dem;
+        }
+
+        function mostrarBanner(tipo, msg) {
+            const banner = document.getElementById('statusBanner');
+            banner.className = 'mb-6 p-4 rounded-xl border text-sm flex items-center justify-between ' +
+                (tipo === 'erro'
+                    ? 'bg-rose-50 border-rose-200 text-rose-800'
+                    : 'bg-emerald-50 border-emerald-200 text-emerald-800');
+            banner.innerHTML = `<span>${msg}</span><button type="button" onclick="this.parentElement.classList.add('hidden')" class="font-bold ml-4">&times;</button>`;
+            banner.classList.remove('hidden');
+        }
+
+        async function carregarPainel() {
+            const ano = document.getElementById('selectAno').value;
+            document.getElementById('printSubtitulo').innerText = `Relatório Consolidado da Secretaria Executiva — Exercício ${ano}`;
+
+            try {
+                const res = await fetch(`${API_URL}/admin/painel/${ano}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.status === 401 || res.status === 403) {
+                    fazerLogout();
+                    return;
+                }
+
+                const data = await res.json();
+                if (!res.ok) {
+                    mostrarBanner('erro', data.erro || 'Erro ao carregar dados do painel.');
+                    return;
+                }
+
+                dadosPainel = data;
+                atualizarKPIs();
+                renderizarTabelaIgrejas();
+                renderizarTabelaMinistros();
+                renderizarConsolidado();
+                renderizarTabelaUsuarios();
+                lucide.createIcons();
+            } catch (err) {
+                console.error(err);
+                mostrarBanner('erro', 'Falha de conexão com o servidor. Verifique se o Render está ativo.');
+            }
+        }
+
+        function atualizarKPIs() {
+            const usuarios = dadosPainel.usuarios || [];
+            const igrejas = usuarios.filter(u => u.role === 'IGREJA');
+            const ministrosUsers = usuarios.filter(u => u.role === 'MINISTRO');
+
+            let totalComungantes = 0;
+            let totalNaoComungantes = 0;
+            let totalReceita = 0;
+            let totalOrcamento = 0;
+            let qtdEstatistico = 0;
+            let qtdConselho = 0;
+            let qtdRelMinistros = 0;
+
+            igrejas.forEach(ig => {
+                if (ig.relatorios && ig.relatorios.length > 0) {
+                    qtdEstatistico++;
+                    const rel = ig.relatorios[0];
+                    totalComungantes += calcComungantesAtuais(rel.rolMembros);
+                    totalNaoComungantes += calcNaoComungantesAtuais(rel.rolMembros);
+                    totalReceita += parseBRL(rel.financeiroPassado?.b4_tot_rec);
+                    totalOrcamento += parseBRL(rel.financeiroFuturo?.b5_tot_rec);
+                }
+                if (ig.relatoriosConselho && ig.relatoriosConselho.length > 0) {
+                    qtdConselho++;
+                }
+            });
+
+            usuarios.forEach(u => {
+                qtdRelMinistros += (u.relatoriosMinistro ? u.relatoriosMinistro.length : 0);
+            });
+
+            document.getElementById('kpiTotalIgrejas').innerText = igrejas.length;
+            document.getElementById('kpiIgrejasSub').innerText = `${qtdEstatistico} estatísticos • ${qtdConselho} conselhos`;
+            document.getElementById('kpiComungantes').innerText = totalComungantes.toLocaleString('pt-BR');
+            document.getElementById('kpiNaoComungantes').innerText = `${totalNaoComungantes.toLocaleString('pt-BR')} não-comungantes`;
+            document.getElementById('kpiReceita').innerText = formatBRL(totalReceita);
+            document.getElementById('kpiOrcamento').innerText = formatBRL(totalOrcamento);
+            document.getElementById('kpiMinistros').innerText = qtdRelMinistros;
+            document.getElementById('kpiMinistrosContas').innerText = `${ministrosUsers.length} contas de ministros`;
+        }
+
+        function mudarAba(aba) {
+            document.querySelectorAll('.aba-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`aba-${aba}`).classList.remove('hidden');
+
+            ['igrejas', 'ministros', 'consolidado', 'usuarios'].forEach(nome => {
+                const btn = document.getElementById(`btn-tab-${nome}`);
+                if (nome === aba) {
+                    btn.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-church-50 text-church-800 border border-church-200 flex items-center gap-2 transition';
+                } else {
+                    btn.className = 'px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition';
+                }
+            });
+            lucide.createIcons();
+        }
+
+        // ==================== TABELA DE IGREJAS ====================
+        function renderizarTabelaIgrejas() {
+            const termo = (document.getElementById('filtroIgreja').value || '').toLowerCase();
+            const tbody = document.getElementById('tbodyIgrejas');
+            const igrejas = (dadosPainel.usuarios || []).filter(u =>
+                u.role === 'IGREJA' &&
+                (u.nomeIgreja.toLowerCase().includes(termo) || u.email.toLowerCase().includes(termo))
+            );
+
+            if (igrejas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">Nenhuma igreja encontrada.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = igrejas.map(ig => {
+                const temEst = ig.relatorios && ig.relatorios.length > 0;
+                const temCon = ig.relatoriosConselho && ig.relatoriosConselho.length > 0;
+                const relEst = temEst ? ig.relatorios[0] : null;
+                const comungantes = temEst ? calcComungantesAtuais(relEst.rolMembros) : '—';
+                const receita = temEst ? formatBRL(parseBRL(relEst.financeiroPassado?.b4_tot_rec)) : '—';
+
+                const badgeEst = temEst
+                    ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Enviado</span>'
+                    : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Pendente</span>';
+
+                const badgeCon = temCon
+                    ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Enviado</span>'
+                    : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Pendente</span>';
+
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-3 px-4">
+                            <div class="font-semibold text-slate-900">${ig.nomeIgreja}</div>
+                            <div class="text-xs text-slate-500">${ig.email}</div>
+                        </td>
+                        <td class="py-3 px-4 text-center">${badgeEst}</td>
+                        <td class="py-3 px-4 text-center">${badgeCon}</td>
+                        <td class="py-3 px-4 text-center font-semibold text-slate-800">${comungantes}</td>
+                        <td class="py-3 px-4 text-right font-medium text-slate-800">${receita}</td>
+                        <td class="py-3 px-4 text-center no-print">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <button type="button" ${!temEst ? 'disabled' : ''} onclick="verDetalheEstatistico('${ig.id}')" class="px-2.5 py-1 text-xs font-semibold rounded border ${temEst ? 'border-church-600 text-church-700 hover:bg-church-50' : 'border-slate-200 text-slate-300 cursor-not-allowed'}">
+                                    Estatístico
+                                </button>
+                                <button type="button" ${!temCon ? 'disabled' : ''} onclick="verDetalheConselho('${ig.id}')" class="px-2.5 py-1 text-xs font-semibold rounded border ${temCon ? 'border-sky-600 text-sky-700 hover:bg-sky-50' : 'border-slate-200 text-slate-300 cursor-not-allowed'}">
+                                    Conselho
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==================== TABELA DE MINISTROS ====================
+        function renderizarTabelaMinistros() {
+            const termo = (document.getElementById('filtroMinistro').value || '').toLowerCase();
+            const tbody = document.getElementById('tbodyMinistros');
+            const lista = [];
+
+            (dadosPainel.usuarios || []).forEach(u => {
+                (u.relatoriosMinistro || []).forEach(rm => {
+                    lista.push({ ...rm, contaNome: u.nomeIgreja, contaEmail: u.email });
+                });
+            });
+
+            const filtrados = lista.filter(item =>
+                (item.nomeMinistro || '').toLowerCase().includes(termo) ||
+                (item.contaNome || '').toLowerCase().includes(termo) ||
+                JSON.stringify(item.identificacaoCampo || {}).toLowerCase().includes(termo)
+            );
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">Nenhum relatório de ministro encontrado para este ano.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtrados.map((rm, idx) => {
+                const campo = rm.identificacaoCampo?.campo_trabalho || rm.identificacaoCampo?.igreja_campo || rm.identificacaoCampo?.situacao || '—';
+                const dataFmt = rm.atualizadoEm ? new Date(rm.atualizadoEm).toLocaleDateString('pt-BR') : '—';
+
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-3 px-4 font-semibold text-slate-900">${rm.nomeMinistro}</td>
+                        <td class="py-3 px-4">
+                            <div class="text-slate-800">${rm.contaNome}</div>
+                            <div class="text-xs text-slate-500">${rm.contaEmail}</div>
+                        </td>
+                        <td class="py-3 px-4 text-slate-700">${campo}</td>
+                        <td class="py-3 px-4 text-center text-xs text-slate-500">${dataFmt}</td>
+                        <td class="py-3 px-4 text-center no-print">
+                            <button type="button" onclick="verDetalheMinistro('${rm.id}')" class="px-3 py-1 text-xs font-semibold rounded border border-church-600 text-church-700 hover:bg-church-50">
+                                Visualizar Ficha
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==================== CONSOLIDADO GERAL ====================
+        function renderizarConsolidado() {
+            const relatorios = [];
+            (dadosPainel.usuarios || []).forEach(u => {
+                if (u.role === 'IGREJA' && u.relatorios && u.relatorios.length > 0) {
+                    relatorios.push(u.relatorios[0]);
+                }
+            });
+
+            document.getElementById('badgeConsolidadoQtd').innerText = `${relatorios.length} igreja(s) computada(s)`;
+
+            const sumInt = (bloco, campo) => relatorios.reduce((acc, r) => acc + (parseInt(r[bloco]?.[campo]) || 0), 0);
+            const sumMoney = (bloco, campo) => relatorios.reduce((acc, r) => acc + parseBRL(r[bloco]?.[campo]), 0);
+
+            // 1. Estrutura & Departamentos
+            const estruturaItens = [
+                ['Congregações', sumInt('estruturaDados', 'congregacoes')],
+                ['Escolas Bíblicas (EBD)', sumInt('estruturaDados', 'escolas')],
+                ['Professores EBD', sumInt('estruturaDados', 'professores')],
+                ['Alunos Matriculados EBD', sumInt('estruturaDados', 'alunos')],
+                ['Sócios UCP (Crianças)', sumInt('departamentos', 'dept_ucp_membros')],
+                ['Sócios UPA (Adolescentes)', sumInt('departamentos', 'dept_upa_membros')],
+                ['Sócios UMP (Mocidade)', sumInt('departamentos', 'dept_ump_membros')],
+                ['Sócios SAF (Mulheres)', sumInt('departamentos', 'dept_saf_membros')],
+                ['Sócios UPH (Homens)', sumInt('departamentos', 'dept_uph_membros')],
+                ['Outras Sociedades (Membros)', sumInt('departamentos', 'dept_outras_membros')]
+            ];
+
+            document.getElementById('listaConsolidadoEstrutura').innerHTML = estruturaItens.map(([label, val]) => `
+                <div class="py-2 flex justify-between">
+                    <dt class="text-slate-600">${label}</dt>
+                    <dd class="font-bold text-slate-900">${val.toLocaleString('pt-BR')}</dd>
+                </div>
+            `).join('');
+
+            // 2. Rol de Membros
+            const comAnt = sumInt('rolMembros', 'c_ant_m') + sumInt('rolMembros', 'c_ant_f');
+            const comAdm = sumInt('rolMembros', 'tot_c_adm_m') + sumInt('rolMembros', 'tot_c_adm_f');
+            const comDem = sumInt('rolMembros', 'tot_c_dem_m') + sumInt('rolMembros', 'tot_c_dem_f');
+            const comAtual = comAnt + comAdm - comDem;
+
+            const ncAnt = sumInt('rolMembros', 'nc_ant_m') + sumInt('rolMembros', 'nc_ant_f');
+            const ncAdm = sumInt('rolMembros', 'tot_nc_adm_m') + sumInt('rolMembros', 'tot_nc_adm_f');
+            const ncDem = sumInt('rolMembros', 'tot_nc_dem_m') + sumInt('rolMembros', 'tot_nc_dem_f');
+            const ncAtual = ncAnt + ncAdm - ncDem;
+
+            const membrosItens = [
+                ['Comungantes (Ano Anterior)', comAnt],
+                ['(+) Admissões Comungantes', comAdm],
+                ['(-) Demissões Comungantes', comDem],
+                ['(=) Total Comungantes Atual', comAtual],
+                ['Rol Separado (Comungantes)', sumInt('rolMembros', 'rol_sep_c_m') + sumInt('rolMembros', 'rol_sep_c_f')],
+                ['Não-Comungantes (Ano Anterior)', ncAnt],
+                ['(+) Admissões Não-Comungantes', ncAdm],
+                ['(-) Demissões Não-Comungantes', ncDem],
+                ['(=) Total Não-Comungantes Atual', ncAtual],
+                ['TOTAL GERAL DE MEMBROS (Comung. + Não-Comung.)', comAtual + ncAtual]
+            ];
+
+            document.getElementById('listaConsolidadoMembros').innerHTML = membrosItens.map(([label, val], idx) => `
+                <div class="py-2 flex justify-between ${idx === 3 || idx === 8 || idx === 9 ? 'bg-emerald-50/70 px-2 rounded font-bold text-emerald-950' : ''}">
+                    <dt class="text-slate-700">${label}</dt>
+                    <dd class="font-bold">${val.toLocaleString('pt-BR')}</dd>
+                </div>
+            `).join('');
+
+            // 3. Receitas Consolidado
+            const rubricasRec = [
+                ['Saldo Anterior', 'rec_saldo'],
+                ['Dízimos', 'rec_dizimos'],
+                ['Ofertas', 'rec_ofertas'],
+                ['Ofertas Missionárias', 'rec_miss'],
+                ['Ofertas Específicas', 'rec_esp'],
+                ['Receitas Financeiras', 'rec_fin'],
+                ['Empréstimos IPB / JPEF', 'rec_emp'],
+                ['Parcerias', 'rec_parc'],
+                ['Outras Receitas', 'rec_outras'],
+                ['TOTAL RECEITAS (Sem Saldo)', 'tot_rec'],
+                ['TOTAL RECEITAS + SALDO', 'tot_rec_saldo']
+            ];
+
+            document.getElementById('tbodyConsolidadoReceitas').innerHTML = rubricasRec.map(([label, suf], idx) => {
+                const v4 = sumMoney('financeiroPassado', `b4_${suf}`);
+                const v5 = sumMoney('financeiroFuturo', `b5_${suf}`);
+                const destaque = idx >= 9 ? 'font-bold bg-emerald-50/70 text-emerald-950' : '';
+                return `
+                    <tr class="${destaque}">
+                        <td class="py-2 px-1 text-slate-700">${label}</td>
+                        <td class="py-2 px-1 text-right">${formatBRL(v4)}</td>
+                        <td class="py-2 px-1 text-right">${formatBRL(v5)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // 4. Despesas Consolidado
+            const rubricasDesp = [
+                ['Patrimônio', 'desp_pat'],
+                ['Causas Locais', 'desp_locais'],
+                ['Evangelismo Local', 'desp_evang'],
+                ['Missões', 'desp_miss'],
+                ['Ação Social', 'desp_soc'],
+                ['Sustento Pastoral', 'desp_pastor'],
+                ['Verba Presbiterial', 'desp_presb'],
+                ['Dízimo ao Supremo Concílio', 'desp_sc'],
+                ['Empréstimos IPB / JPEF', 'desp_emp'],
+                ['Outras Despesas', 'desp_outras'],
+                ['TOTAL DAS DESPESAS', 'tot_desp']
+            ];
+
+            document.getElementById('tbodyConsolidadoDespesas').innerHTML = rubricasDesp.map(([label, suf], idx) => {
+                const v4 = sumMoney('financeiroPassado', `b4_${suf}`);
+                const v5 = sumMoney('financeiroFuturo', `b5_${suf}`);
+                const destaque = idx === 10 ? 'font-bold bg-rose-50/70 text-rose-950' : '';
+                return `
+                    <tr class="${destaque}">
+                        <td class="py-2 px-1 text-slate-700">${label}</td>
+                        <td class="py-2 px-1 text-right">${formatBRL(v4)}</td>
+                        <td class="py-2 px-1 text-right">${formatBRL(v5)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==================== GESTÃO DE USUÁRIOS ====================
+        function renderizarTabelaUsuarios() {
+            const tbody = document.getElementById('tbodyUsuarios');
+            const usuarios = dadosPainel.usuarios || [];
+
+            tbody.innerHTML = usuarios.map(u => {
+                const badgeColor = u.role === 'ADMIN'
+                    ? 'bg-purple-100 text-purple-800'
+                    : (u.role === 'MINISTRO' ? 'bg-sky-100 text-sky-800' : 'bg-emerald-100 text-emerald-800');
+
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-3 px-4 font-semibold text-slate-900">${u.nomeIgreja}</td>
+                        <td class="py-3 px-4 text-slate-600">${u.email}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}">${u.role}</span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <select onchange="alterarRoleUsuario('${u.id}', this.value)" class="px-2 py-1 text-xs border border-slate-300 rounded bg-white">
+                                <option value="IGREJA" ${u.role === 'IGREJA' ? 'selected' : ''}>IGREJA</option>
+                                <option value="MINISTRO" ${u.role === 'MINISTRO' ? 'selected' : ''}>MINISTRO</option>
+                                <option value="ADMIN" ${u.role === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+                            </select>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <button type="button" onclick="excluirUsuario('${u.id}', '${u.nomeIgreja.replace(/'/g, "\\'")}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Excluir conta">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        async function criarNovoUsuario(e) {
+            e.preventDefault();
+            const payload = {
+                nomeIgreja: document.getElementById('novoNome').value.trim(),
+                email: document.getElementById('novoEmail').value.trim(),
+                senha: document.getElementById('novoSenha').value,
+                role: document.getElementById('novoRole').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/admin/usuarios`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('formNovoUsuario').reset();
+                    mostrarBanner('sucesso', 'Conta criada com sucesso!');
+                    await carregarPainel();
+                } else {
+                    mostrarBanner('erro', data.erro || 'Erro ao criar conta.');
+                }
+            } catch (err) {
+                mostrarBanner('erro', 'Erro de conexão ao criar conta.');
+            }
+        }
+
+        async function alterarRoleUsuario(id, novaRole) {
+            try {
+                const res = await fetch(`${API_URL}/admin/usuario/${id}/role`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ role: novaRole })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    mostrarBanner('sucesso', 'Perfil atualizado com sucesso!');
+                    await carregarPainel();
+                } else {
+                    mostrarBanner('erro', data.erro || 'Erro ao atualizar perfil.');
+                }
+            } catch (err) {
+                mostrarBanner('erro', 'Erro de conexão ao atualizar perfil.');
+            }
+        }
+
+        async function excluirUsuario(id, nome) {
+            if (!confirm(`Tem certeza que deseja excluir a conta "${nome}"? Esta ação não pode ser desfeita.`)) return;
+
+            try {
+                const res = await fetch(`${API_URL}/admin/usuario/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    mostrarBanner('sucesso', 'Conta removida com sucesso.');
+                    await carregarPainel();
+                } else {
+                    mostrarBanner('erro', data.erro || 'Não foi possível excluir a conta.');
+                }
+            } catch (err) {
+                mostrarBanner('erro', 'Erro de conexão ao excluir conta.');
+            }
+        }
+
+        // ==================== MODAIS DE DETALHES ====================
+        function formatarObjetoChaveValor(obj) {
+            if (!obj || typeof obj !== 'object') return '<p class="text-slate-400 italic">Sem dados preenchidos.</p>';
+            const entries = Object.entries(obj).filter(([_, v]) => v !== '' && v !== null && v !== undefined);
+            if (entries.length === 0) return '<p class="text-slate-400 italic">Sem dados preenchidos.</p>';
+
+            return `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    ${entries.map(([k, v]) => `
+                        <div class="p-2 bg-slate-50 rounded border border-slate-200 flex justify-between gap-2">
+                            <span class="text-xs font-medium text-slate-500 break-all">${k}</span>
+                            <span class="text-xs font-bold text-slate-900 text-right">${v}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function verDetalheEstatistico(usuarioId) {
+            const u = dadosPainel.usuarios.find(x => x.id === usuarioId);
+            if (!u || !u.relatorios?.length) return;
+            const r = u.relatorios[0];
+
+            document.getElementById('detalheTitulo').innerText = `Relatório Estatístico & Financeiro — ${u.nomeIgreja}`;
+            document.getElementById('detalheSubtitulo').innerText = `Exercício ${dadosPainel.ano} • Atualizado em ${new Date(r.atualizadoEm).toLocaleString('pt-BR')}`;
+
+            document.getElementById('detalheConteudo').innerHTML = `
+                <div><h4 class="font-bold text-church-800 mb-2">Bloco I — Estrutura</h4>${formatarObjetoChaveValor(r.estruturaDados)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">Bloco II — Departamentos</h4>${formatarObjetoChaveValor(r.departamentos)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">Bloco III — Rol de Membros</h4>${formatarObjetoChaveValor(r.rolMembros)}</div>
+                <div><h4 class="font-bold text-emerald-800 mb-2">Bloco IV — Finanças (Ano Anterior)</h4>${formatarObjetoChaveValor(r.financeiroPassado)}</div>
+                <div><h4 class="font-bold text-sky-800 mb-2">Bloco V — Orçamento (Ano Seguinte)</h4>${formatarObjetoChaveValor(r.financeiroFuturo)}</div>
+                <div><h4 class="font-bold text-slate-800 mb-2">Bloco VI — Informações Finais</h4>${formatarObjetoChaveValor(r.informacoesFinais)}</div>
+            `;
+            document.getElementById('detalheModal').classList.remove('hidden');
+        }
+
+        function verDetalheConselho(usuarioId) {
+            const u = dadosPainel.usuarios.find(x => x.id === usuarioId);
+            if (!u || !u.relatoriosConselho?.length) return;
+            const r = u.relatoriosConselho[0];
+
+            document.getElementById('detalheTitulo').innerText = `Relatório do Conselho — ${u.nomeIgreja}`;
+            document.getElementById('detalheSubtitulo').innerText = `Exercício ${dadosPainel.ano}`;
+
+            document.getElementById('detalheConteudo').innerHTML = `
+                <div><h4 class="font-bold text-church-800 mb-2">1. Identificação</h4>${formatarObjetoChaveValor(r.identificacao)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">2. Organização</h4>${formatarObjetoChaveValor(r.organizacao)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">3. Supervisão Espiritual</h4>${formatarObjetoChaveValor(r.supervisaoEspiritual)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">4. Supervisão Administrativa</h4>${formatarObjetoChaveValor(r.supervisaoAdmin)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">5. Planejamento & Patrimônio</h4>${formatarObjetoChaveValor(r.planejamentoPatrimonio)}</div>
+                <div><h4 class="font-bold text-slate-800 mb-2">6. Informações Finais</h4>${formatarObjetoChaveValor(r.informacoesFinais)}</div>
+            `;
+            document.getElementById('detalheModal').classList.remove('hidden');
+        }
+
+        function verDetalheMinistro(relatorioId) {
+            let encontrado = null;
+            (dadosPainel.usuarios || []).forEach(u => {
+                const match = (u.relatoriosMinistro || []).find(rm => rm.id === relatorioId);
+                if (match) encontrado = { ...match, contaNome: u.nomeIgreja };
+            });
+            if (!encontrado) return;
+
+            document.getElementById('detalheTitulo').innerText = `Relatório Ministerial — ${encontrado.nomeMinistro}`;
+            document.getElementById('detalheSubtitulo').innerText = `Exercício ${dadosPainel.ano} • Conta: ${encontrado.contaNome}`;
+
+            document.getElementById('detalheConteudo').innerHTML = `
+                <div><h4 class="font-bold text-church-800 mb-2">1. Identificação e Campo</h4>${formatarObjetoChaveValor(encontrado.identificacaoCampo)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">2. Liderança Pastoral</h4>${formatarObjetoChaveValor(encontrado.liderancaPastoral)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">3. Nutrição Espiritual</h4>${formatarObjetoChaveValor(encontrado.nutricaoEspiritual)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">4. Assistência Pastoral</h4>${formatarObjetoChaveValor(encontrado.assistenciaPastoral)}</div>
+                <div><h4 class="font-bold text-church-800 mb-2">5. Proteção Pastoral</h4>${formatarObjetoChaveValor(encontrado.protecaoPastoral)}</div>
+                <div><h4 class="font-bold text-slate-800 mb-2">6. Outras Informações</h4>${formatarObjetoChaveValor(encontrado.outrasInformacoes)}</div>
+            `;
+            document.getElementById('detalheModal').classList.remove('hidden');
+        }
+
+        function fecharDetalheModal() {
+            document.getElementById('detalheModal').classList.add('hidden');
+        }
+
+        function imprimirDetalhe() {
+            const titulo = document.getElementById('detalheTitulo').innerText;
+            const sub = document.getElementById('detalheSubtitulo').innerText;
+            const conteudo = document.getElementById('detalheConteudo').innerHTML;
+
+            const win = window.open('', '_blank');
+            win.document.write(`
+                <html><head><title>${titulo}</title>
+                <script src="https://cdn.tailwindcss.com"><\/script>
+                </head><body class="p-8 font-sans text-slate-900">
+                <h1 class="text-xl font-bold border-b pb-2 mb-1">${titulo}</h1>
+                <p class="text-xs text-slate-500 mb-6">${sub}</p>
+                <div class="space-y-4">${conteudo}</div>
+                <script>setTimeout(() => { window.print(); }, 500);<\/script>
+                </body></html>
+            `);
+            win.document.close();
+        }
+
+        // ==================== EXPORTAÇÃO CSV ====================
+        function exportarCSV() {
+            const igrejas = (dadosPainel.usuarios || []).filter(u => u.role === 'IGREJA');
+            const linhas = [
+                ['Igreja', 'Email', 'Estatistico Enviado', 'Conselho Enviado', 'Congregacoes', 'Escolas EBD', 'Professores', 'Alunos', 'Comungantes Atual', 'Nao Comungantes Atual', 'Receita Executada (B4)', 'Despesa Executada (B4)', 'Receita Orcada (B5)', 'Despesa Orcada (B5)', 'Secretario', 'Telefone']
+            ];
+
+            igrejas.forEach(ig => {
+                const temEst = ig.relatorios && ig.relatorios.length > 0;
+                const temCon = ig.relatoriosConselho && ig.relatoriosConselho.length > 0;
+                const r = temEst ? ig.relatorios[0] : {};
+
+                linhas.push([
+                    `"${ig.nomeIgreja}"`,
+                    `"${ig.email}"`,
+                    temEst ? 'SIM' : 'NAO',
+                    temCon ? 'SIM' : 'NAO',
+                    r.estruturaDados?.congregacoes || 0,
+                    r.estruturaDados?.escolas || 0,
+                    r.estruturaDados?.professores || 0,
+                    r.estruturaDados?.alunos || 0,
+                    temEst ? calcComungantesAtuais(r.rolMembros) : 0,
+                    temEst ? calcNaoComungantesAtuais(r.rolMembros) : 0,
+                    `"${r.financeiroPassado?.b4_tot_rec || 'R$ 0,00'}"`,
+                    `"${r.financeiroPassado?.b4_tot_desp || 'R$ 0,00'}"`,
+                    `"${r.financeiroFuturo?.b5_tot_rec || 'R$ 0,00'}"`,
+                    `"${r.financeiroFuturo?.b5_tot_desp || 'R$ 0,00'}"`,
+                    `"${r.informacoesFinais?.secretario || ''}"`,
+                    `"${r.informacoesFinais?.telefone || ''}"`
+                ]);
+            });
+
+            const csvContent = '\uFEFF' + linhas.map(e => e.join(';')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `consolidado-prpt-${dadosPainel.ano}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function fazerLogout() {
+            localStorage.removeItem('token_igreja');
+            localStorage.removeItem('nome_igreja');
+            localStorage.removeItem('role_igreja');
+            window.location.href = './login.html';
+        }
+    </script>
+</body>
+</html>
