@@ -53,7 +53,10 @@
 
                 <nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-emerald-100">
                     <a href="#diretoria" class="hover:text-white transition">Mesa Administrativa</a>
-                    <a href="#igrejas" class="hover:text-white transition">Igrejas & Campos</a>
+                    <button type="button" onclick="abrirModalSociedades()" class="hover:text-white transition flex items-center gap-1.5 cursor-pointer">
+                        <span>Sociedades Internas</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-emerald-300"></i>
+                    </button>
                 </nav>
 
                 <div class="flex items-center space-x-2.5">
@@ -301,8 +304,131 @@
             const deslocamento = 336 * direcao;
             track.scrollBy({ left: deslocamento, behavior: 'smooth' });
         }
-
         document.addEventListener('DOMContentLoaded', renderizarCarrosselIgrejas);
-    </script>
+        </script>
+const sociedadesInternasPRPT = [
+            {
+                sigla: 'UCP',
+                nome: 'União de Crianças Presbiterianas',
+                descricao: 'Federação Presbiterial de Trabalho com a Infância',
+                secretario: 'Secretaria Presbiterial da Infância (a definir)',
+                instagram: 'https://www.instagram.com/',
+                arroba: '@ucp.prpt'
+            },
+            {
+                sigla: 'UPA',
+                nome: 'União Presbiteriana de Adolescentes',
+                descricao: 'Federação Presbiterial de Adolescentes (FeUPA PRPT)',
+                secretario: 'Secretaria Presbiterial de Adolescentes',
+                instagram: 'https://www.instagram.com/',
+                arroba: '@feupa.prpt'
+            },
+            {
+                sigla: 'UMP',
+                nome: 'União de Mocidade Presbiteriana',
+                descricao: 'Federação Presbiterial de Mocidade (FUMP PRPT)',
+                secretario: 'Secretaria Presbiterial da Mocidade',
+                instagram: 'https://www.instagram.com/',
+                arroba: '@fump.prpt'
+            },
+            {
+                sigla: 'SAF',
+                nome: 'Sociedade Auxiliadora Feminina',
+                descricao: 'Federação Presbiterial de Mulheres (SAF PRPT)',
+                secretario: 'Secretaria Presbiterial do Trabalho Feminino',
+                instagram: 'https://www.instagram.com/',
+                arroba: '@saf.prpt'
+            },
+            {
+                sigla: 'UPH',
+                nome: 'União Presbiteriana de Homens',
+                descricao: 'Federação Presbiterial de Homens (FUPH PRPT)',
+                secretario: 'Secretaria Presbiterial do Trabalho Masculino',
+                instagram: 'https://www.instagram.com/',
+                arroba: '@uph.prpt'
+            }
+        ];
+
+        function renderizarSociedadesInternas() {
+            const container = document.getElementById('listaSociedadesModal');
+            if (!container) return;
+
+            container.innerHTML = sociedadesInternasPRPT.map(soc => `
+                <div class="bg-white rounded-xl border border-slate-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-emerald-300 transition">
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-12 h-12 rounded-xl bg-church-50 border border-church-200 text-church-800 font-extrabold text-sm flex items-center justify-center shrink-0">
+                            ${soc.sigla}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm sm:text-base">${soc.nome}</h4>
+                            <p class="text-xs text-slate-500">${soc.descricao}</p>
+                            <p class="text-xs text-church-700 font-medium mt-1">${soc.secretario}</p>
+                        </div>
+                    </div>
+
+                    <a href="${soc.instagram}" target="_blank" rel="noopener noreferrer"
+                       class="px-3.5 py-2 rounded-lg bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shrink-0 transition shadow-sm">
+                        <i data-lucide="instagram" class="w-4 h-4"></i>
+                        <span>${soc.arroba}</span>
+                    </a>
+                </div>
+            `).join('');
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function abrirModalSociedades() {
+            renderizarSociedadesInternas();
+            document.getElementById('modalSociedades').classList.remove('hidden');
+        }
+
+        function fecharModalSociedades() {
+            document.getElementById('modalSociedades').classList.add('hidden');
+        }
+
+        function fecharModalSociedadesFora(event) {
+            if (event.target.id === 'modalSociedades') {
+                fecharModalSociedades();
+            }
+        }
+
+        // Fecha o pop-up ao pressionar a tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') fecharModalSociedades();
+        });        
+<!-- MODAL / POP-UP: SOCIEDADES INTERNAS (FEDERAÇÕES PRESBITERIAIS) -->
+<div id="modalSociedades" onclick="fecharModalSociedadesFora(event)" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+        
+        <!-- Cabeçalho do Pop-up -->
+        <div class="px-6 py-4 bg-church-900 text-white flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-emerald-800/80 rounded-lg border border-emerald-600/40">
+                    <i data-lucide="users" class="w-5 h-5 text-emerald-400"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold leading-tight">Sociedades Internas — PRPT</h3>
+                    <p class="text-xs text-emerald-200">Federações Presbiteriais & Secretarias de Causas</p>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalSociedades()" class="p-1.5 rounded-lg hover:bg-church-800 text-emerald-200 hover:text-white transition" aria-label="Fechar">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Lista das Sociedades Internas -->
+        <div id="listaSociedadesModal" class="p-6 overflow-y-auto space-y-3 bg-slate-50">
+            <!-- Preenchido automaticamente pelo script -->
+        </div>
+
+        <!-- Rodapé do Pop-up -->
+        <div class="px-6 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+            <span>Presbitério de Ribeirão Preto (IPB)</span>
+            <button type="button" onclick="fecharModalSociedades()" class="px-4 py-2 bg-church-700 hover:bg-church-800 text-white font-semibold rounded-lg text-xs transition">
+                Fechar
+            </button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
