@@ -24,6 +24,16 @@
             }
         };
     </script>
+        <style>
+            /* Oculta a barra de rolagem padrão mantendo a rolagem suave no carrossel */
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans flex flex-col min-h-screen">
 
@@ -128,20 +138,35 @@
             </div>
         </section>
 
-        <!-- Igrejas & Informativos -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <section id="igrejas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
-                <h2 class="text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
-                    <i data-lucide="map-pin" class="w-5 h-5 text-church-700"></i>
-                    <span>Igrejas e Congregações Jurisdicionadas</span>
-                </h2>
-                <p class="text-sm text-slate-600 leading-relaxed">
-                    [Espaço reservado para a relação das Igrejas locais, Congregações Presbiteriais e Campos Missionários que compõem o Presbitério de Ribeirão Preto.]
-                </p>
-            </section>
-
+<!-- SEÇÃO: CARROSSEL DE IGREJAS E CONGREGAÇÕES JURISDICIONADAS -->
+<section id="igrejas" class="mt-10 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+            <div class="flex items-center gap-2 text-church-800">
+                <i data-lucide="map-pin" class="w-5 h-5 text-emerald-600"></i>
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900">Igrejas e Congregações Jurisdicionadas</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                Conheça as igrejas locais e campos missionários que compõem o Presbitério de Ribeirão Preto e acompanhe suas redes sociais.
+            </p>
         </div>
 
+        <!-- Botões de Navegação do Carrossel -->
+        <div class="flex items-center gap-2 self-end sm:self-auto">
+            <button type="button" onclick="moverCarrosselIgrejas(-1)" aria-label="Anterior" class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-church-50 hover:border-church-300 text-slate-700 hover:text-church-800 transition shadow-sm">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <button type="button" onclick="moverCarrosselIgrejas(1)" aria-label="Próximo" class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-church-50 hover:border-church-300 text-slate-700 hover:text-church-800 transition shadow-sm">
+                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Trilha Horizontal do Carrossel -->
+    <div id="carrosselIgrejasTrack" class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-2">
+        <!-- Os cards das igrejas são renderizados automaticamente pelo script abaixo -->
+    </div>
+</section>
     </main>
 
     <!-- Footer -->
@@ -162,5 +187,77 @@
     <script>
         if (window.lucide) lucide.createIcons();
     </script>
+<script>
+    // Lista das Igrejas e Congregações do PRPT (edite nomes, cidades e links do Instagram aqui)
+    const igrejasPRPT = [
+        {
+            nome: 'Igreja Presbiteriana de Ribeirão Preto',
+            cidade: 'Ribeirão Preto - SP',
+            instagram: 'https://www.instagram.com/ipribeiraopreto/',
+            arroba: '@ipribeiraopreto'
+        },
+        {
+            nome: 'Igreja Presbiteriana do Ipiranga',
+            cidade: 'Ribeirão Preto - SP',
+            instagram: 'https://www.instagram.com/ip_ipiranga',
+            arroba: '@ip_ipiranga'
+        },
+        {
+            nome: 'Igreja Presbiteriana de Descalvado',
+            cidade: 'Descalvado - SP',
+            instagram: 'https://www.instagram.com/presbiteriana.descalvado/',
+            arroba: '@presbiteriana.descalvado'
+        },
+        {
+            nome: 'Igreja Presbiteriana de Altinópolis',
+            cidade: 'Altinópolis - SP',
+            instagram: 'https://www.instagram.com/ipaltinopolis',
+            arroba: '@ipaltinopolis'
+        }
+    ];
+
+    function renderizarCarrosselIgrejas() {
+        const track = document.getElementById('carrosselIgrejasTrack');
+        if (!track) return;
+
+        track.innerHTML = igrejasPRPT.map(ig => `
+            <div class="snap-start shrink-0 w-72 sm:w-80 bg-slate-50/80 hover:bg-white rounded-xl border border-slate-200 hover:border-emerald-300 p-5 flex flex-col justify-between transition shadow-sm hover:shadow-md">
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                            ${ig.tipo}
+                        </span>
+                        <span class="text-xs text-slate-400 flex items-center gap-1">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-600"></i>
+                            ${ig.cidade}
+                        </span>
+                    </div>
+
+                    <h4 class="text-base font-bold text-slate-900 leading-snug mb-1">
+                        ${ig.nome}
+                    </h4>
+                    <p class="text-xs text-slate-500 mb-4">${ig.arroba}</p>
+                </div>
+
+                <a href="${ig.instagram}" target="_blank" rel="noopener noreferrer"
+                   class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm">
+                    <i data-lucide="instagram" class="w-4 h-4"></i>
+                    <span>Visitar Instagram</span>
+                </a>
+            </div>
+        `).join('');
+
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function moverCarrosselIgrejas(direcao) {
+        const track = document.getElementById('carrosselIgrejasTrack');
+        if (!track) return;
+        const deslocamento = 336 * direcao;
+        track.scrollBy({ left: deslocamento, behavior: 'smooth' });
+    }
+
+    document.addEventListener('DOMContentLoaded', renderizarCarrosselIgrejas);
+</script>    
 </body>
 </html>
