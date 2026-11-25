@@ -189,7 +189,8 @@
     </script>
 <script>
     // Lista das Igrejas e Congregações do PRPT (edite nomes, cidades e links do Instagram aqui)
-    const igrejasPRPT = [
+    const igrejasPRPT = 
+    [
         {
             nome: 'Igreja Presbiteriana de Ribeirão Preto',
             cidade: 'Ribeirão Preto - SP',
@@ -262,10 +263,27 @@
             instagram: 'https://www.instagram.com/'ipjardinopolis',
             arroba: '@ipjardinopolis'
         },
-             
+        {
+            nome: 'Igreja Presbiteriana de Santa Rosa de Viterbo',
+            cidade: 'Santa Rosa de Viterbo - SP',
+            instagram: 'https://www.instagram.com/'ip_santarosadeviterbo',
+            arroba: '@ip_santarosadeviterbo'
+        },
+        {
+            nome: 'Igreja Presbiteriana de Barrinha',
+            cidade: 'Barrinha - SP',
+            instagram: 'https://www.instagram.com/'ip_barrinha',
+            arroba: '@ip_barrinha'
+        },
+        {
+            nome: 'Igreja Presbiteriana de São Simão',
+            cidade: 'São Simão - SP',
+            instagram: 'https://www.instagram.com/'ip_saosimao',
+            arroba: '@ip_saosimao'
+        }        
     ];
-
-    function renderizarCarrosselIgrejas() {
+    function renderizarCarrosselIgrejas() 
+    {
         const track = document.getElementById('carrosselIgrejasTrack');
         if (!track) return;
 
@@ -297,14 +315,15 @@
         `).join('');
 
         if (window.lucide) lucide.createIcons();
-    }
+    },
 
-    function moverCarrosselIgrejas(direcao) {
+    function moverCarrosselIgrejas(direcao) 
+    {
         const track = document.getElementById('carrosselIgrejasTrack');
         if (!track) return;
         const deslocamento = 336 * direcao;
         track.scrollBy({ left: deslocamento, behavior: 'smooth' });
-    }
+    },
 
     document.addEventListener('DOMContentLoaded', renderizarCarrosselIgrejas);
 </script>    
